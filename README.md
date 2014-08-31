@@ -15,4 +15,4 @@ Then do 3 steps:
 3. if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
 
 
-![Tool UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png) "Color Importer"
+![Tool UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png "Color Importer")
