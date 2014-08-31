@@ -9,10 +9,13 @@ Following things are needed:
 - The Playersettings "API Compatibility Level" of Unity has to be set to ".NET 2.0" NOT ".NET 2.0 subset" (otherwise the System.Web is missing)
 
 
-Then do 3 steps:
+add the ColorImporter.cs script on a gameObject and do 3 steps:
 - insert an url which goes directly to either a pltts.me or colourlovers.com palette
 - click on "Import palette from URL"
 - if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
 
 
 ![Tool UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png "Color Importer")
+
+
+The "load from file" will be called in the Awake of the ColorImporter script. If your using multiple gameobjects with ColorImporter scripts, make sure they have different names.
