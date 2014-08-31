@@ -1,0 +1,9 @@
+*.csproj
+Library/
+ProjectSettings/
+Assets/SaveLoadObjects/ColorImporter_myData.txt.meta
+Assets/SaveLoadObjects/
+*.meta
+Assets/HtmlSharp/
+*.userprefs
+*.sln
