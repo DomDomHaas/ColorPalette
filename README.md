@@ -8,3 +8,6 @@ Following things are needed:
 - JSONPersistent Unity Tool (is included)
 - The Playersettings "API Compatibility Level" of Unity has to be set to ".NET 2.0" NOT ".NET 2.0 subset" (otherwise the System.Web is missing)
 
+
+
+![Tool UI preview ](https://github.com/DomDomHaas/ColorImporter/master/preview.png) "Color Importer"
