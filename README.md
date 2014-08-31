@@ -10,9 +10,9 @@ Following things are needed:
 
 
 Then do 3 steps:
-1. insert an url which goes directly to either a pltts.me or colourlovers.com palette
-2. click on "Import palette from URL"
-3. if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
+- insert an url which goes directly to either a pltts.me or colourlovers.com palette
+- click on "Import palette from URL"
+- if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
 
 
 ![Tool UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png "Color Importer")
