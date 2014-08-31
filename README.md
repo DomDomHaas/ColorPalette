@@ -10,4 +10,4 @@ Following things are needed:
 
 
 
-![Tool UI preview ](https://github.com/DomDomHaas/ColorImporter/master/preview.png) "Color Importer"
+![Tool UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png) "Color Importer"
