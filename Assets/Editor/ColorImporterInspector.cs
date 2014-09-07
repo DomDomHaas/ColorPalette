@@ -14,6 +14,9 @@ public class ColorImporterInspector : Editor
 		private bool pickColors = false;
 		private bool pickPercentages = false;
 
+		private bool adjustPCTBefore = false;
+		private float minPct = 0.01f;
+
 		private ColorImporter myImporter;
 
 
@@ -123,15 +126,104 @@ public class ColorImporterInspector : Editor
 				pickPercentages = GUILayout.Toggle (pickPercentages, " Pick Percent");
 		
 				if (pickPercentages) {
-						foreach (float pct in myImporter.myData.percentages) {
-								GUILayout.TextField (pct.ToString ());
-						}
+						drawPercentageUI ();
 				}
 
 				EditorUtility.SetDirty (myImporter);
 		} 
-	
-
-} 
 
 
+		private void drawColorPicker ()
+		{
+
+		}
+
+		private void drawPercentageUI ()
+		{
+
+				// margin box before buttons
+				GUILayoutUtility.GetRect (Screen.width, 20);
+
+				adjustPCTBefore = GUILayout.Toggle (adjustPCTBefore, " adjust percentage to the left");
+
+				// margin box before buttons
+				GUILayoutUtility.GetRect (Screen.width, 20);
+
+				/*
+		if (){
+
+		}
+		*/
+
+				for (int i = 0; i < myImporter.myData.percentages.Length; i++) {
+
+						Rect percentageRow = EditorGUILayout.BeginHorizontal ();
+
+						// draw a little preview of the current color
+						Rect colRect = new Rect (percentageRow.x, percentageRow.y, percentageRow.width * 0.35f, percentageRow.height);
+						
+
+						//EditorGUILayout.BeginVertical ();
+
+						EditorGUIUtility.DrawColorSwatch (colRect, myImporter.myData.colors [i]);
+
+						//EditorGUILayout.EndVertical ();
+
+						float pct = myImporter.myData.percentages [i];
+						float maxPct = 1.0f - myImporter.myData.percentages.Length * this.minPct;
+
+
+						//EditorGUILayout.BeginVertical ();
+
+						float newPct = EditorGUILayout.Slider (" ", pct, this.minPct, maxPct);
+
+						//EditorGUILayout.EndVertical ();
+
+						if (newPct != pct) {
+								//Debug.Log ("change on " + i + " old " + pct + " new " + newPct);
+
+								adjustNeighborPCT (i, pct - newPct);
+
+								myImporter.myData.percentages [i] = newPct;
+						}
+						//GUILayout.TextField (pct.ToString ());
+
+						EditorGUILayout.EndHorizontal ();
+
+				}
+
+		}
+
+		private void adjustNeighborPCT (int i, float pctDiff)
+		{
+				if (adjustPCTBefore) {
+						if (i - 1 >= 0) {
+/*								float pctToTheLeft = myImporter.myData.percentages [i - 1];
+								pctToTheLeft += pctDiff;
+								myImporter.myData.percentages [i - 1] = pctToTheLeft;
+*/
+								myImporter.myData.percentages [i - 1] += pctDiff;
+						} else {
+								myImporter.myData.percentages [myImporter.myData.percentages.Length - 1] += pctDiff;
+/*							float pctFarRight = myImporter.myData.percentages [myImporter.myData.percentages.Length - 1];
+								pctFarRight += pctDiff;
+								myImporter.myData.percentages [i - 1] = pctToTheLeft;
+*/
+						}
+				} else {
+						if (i + 1 <= myImporter.myData.percentages.Length - 1) {
+/*								float pctToTheRight = myImporter.myData.percentages [i + 1];
+								pctToTheRight += pctDiff;
+								myImporter.myData.percentages [i + 1] = pctToTheRight;
+*/
+								myImporter.myData.percentages [i + 1] += pctDiff;
+						} else {
+								myImporter.myData.percentages [0] += pctDiff;
+						}
+				}
+
+		} 
+
+
+
+}
