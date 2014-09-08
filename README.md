@@ -1,7 +1,8 @@
-ColorImporter
+ColorPalette for Unity
 =============
 
-ColorImporter is a plugin for Unity which supports loading in Palettes from www.pltts.me / www.colourlovers.com (by now)
+ColorPalette is a plugin for Unity which let's you create ColorPalettes.
+It supports loading in Palettes from www.pltts.me / www.colourlovers.com (by now)
 
 Following things are needed:
 - HtmlSharp (HtmlParser: https://github.com/wallerdev/htmlsharp extract the "HtmlSharp" folder into your asset folder)
