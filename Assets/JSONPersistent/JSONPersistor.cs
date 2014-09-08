@@ -180,6 +180,7 @@ public class JSONPersistor
 		}
 	#endregion
 
+	#region static_color_methdos
 
 		// Note that Color32 and Color implictly convert to each other.
 		// You may pass a Color object to this method without first casting it.
@@ -191,9 +192,33 @@ public class JSONPersistor
 	
 		public static Color HexToColor (string hex)
 		{
-				byte r = byte.Parse (hex.Substring (0, 2), System.Globalization.NumberStyles.HexNumber);
-				byte g = byte.Parse (hex.Substring (2, 2), System.Globalization.NumberStyles.HexNumber);
-				byte b = byte.Parse (hex.Substring (4, 2), System.Globalization.NumberStyles.HexNumber);
-				return new Color32 (r, g, b, 255);
+				if (hex.Length < 6) {
+						throw new UnityException ("Hexadecimal Color Value is too short!");
+				} else {
+						byte r = byte.Parse (hex.Substring (0, 2), System.Globalization.NumberStyles.HexNumber);
+						byte g = byte.Parse (hex.Substring (2, 2), System.Globalization.NumberStyles.HexNumber);
+						byte b = byte.Parse (hex.Substring (4, 2), System.Globalization.NumberStyles.HexNumber);
+						return new Color32 (r, g, b, 255);
+				}
 		}
+
+		public static string[] getHexArrayFromColors (Color[] colors)
+		{
+				string[] hexArray = new string[colors.Length];
+				for (int i = 0; i < colors.Length; i++) {
+						hexArray [i] = JSONPersistor.ColorToHex (colors [i]);
+				}
+				return hexArray;
+		}
+	
+		public static Color[] getColorsArrayFromHex (string[] hexArray)
+		{
+				Color[] colors = new Color[hexArray.Length];
+				for (int i = 0; i < hexArray.Length; i++) {
+						colors [i] = JSONPersistor.HexToColor (hexArray [i]);
+				}
+				return colors;
+		}
+
+	#endregion
 }

@@ -7,7 +7,7 @@ using HtmlSharp;
 using HtmlSharp.Elements;
 using SimpleJSON;
 
-public class ColorImporter : JSONPersistent
+public class ColorPalette : JSONPersistent
 {
 
 		private bool isColourLovers = false;
@@ -16,38 +16,55 @@ public class ColorImporter : JSONPersistent
 
 
 		[Serializable]
-		public class data
+		public class PaletteData
 		{
 
 				[SerializeField]
 				public string
-						paletteURL = "";
+						paletteURL;
 
 				[SerializeField]
 				public bool
-						loadPercent = false;
+						loadPercent;
 
 
 				[SerializeField]
 				public Color[]
-						colors = new Color[5];
+						colors;
 
 				[SerializeField]
 				public float[]
-						percentages = new float[5];
+						percentages;
 
 				[SerializeField]
 				public float
-						totalWidth = 0;
+						totalWidth;
 		}
 
-		public data myData;
+		public PaletteData myData = new PaletteData ();
 
 
 		// Use this for initialization
 		void Awake ()
 		{
-				load ();
+				init ();
+		}
+
+		public void init ()
+		{
+				myData.paletteURL = "";
+				myData.loadPercent = false;
+				myData.colors = new Color[5];
+				myData.percentages = new float[5];
+				myData.totalWidth = 0;
+
+				if (FileExists ()) {
+						load ();
+				} else {
+						string[] hexArray = new string[]{"69D2E7", "A7DBD8", "E0E4CC", "F38630", "FA6900"};
+						myData.colors = JSONPersistor.getColorsArrayFromHex (hexArray);
+						setEvenPercentages ();
+				}
 		}
 	
 		// Update is called once per frame
@@ -63,7 +80,7 @@ public class ColorImporter : JSONPersistent
 				jClass ["paletteURL"] = myData.paletteURL;
 				jClass ["loadPercent"].AsBool = myData.loadPercent;
 			
-				string[] hexArray = getColorsHexArray (myData.colors);
+				string[] hexArray = JSONPersistor.getHexArrayFromColors (myData.colors);
 
 				for (int i = 0; i < hexArray.Length; i++) {
 						jClass ["colors"] [i] = hexArray [i];
@@ -74,7 +91,8 @@ public class ColorImporter : JSONPersistent
 				}
 
 				jClass ["totalWidth"].AsFloat = myData.totalWidth;
-		
+
+				//Debug.Log ("getDataClass: " + jClass ["colors"].Count + " " + jClass ["percentages"].Count);
 				return jClass;
 		}
 
@@ -91,10 +109,15 @@ public class ColorImporter : JSONPersistent
 						hexArray [i] = jClass ["colors"] [i];
 				}
 						
-				myData.colors = getHexArrayColors (hexArray);
+				myData.colors = JSONPersistor.getColorsArrayFromHex (hexArray);
 				
 				size = jClass ["percentages"].Count;
-		
+
+				if (myData.percentages.Length != size) {
+						// if the size of the file is different than the standard size -> init()
+						myData.percentages = new float[size];
+				}
+
 				for (int i = 0; i < size; i++) {
 						myData.percentages [i] = jClass ["percentages"] [i].AsFloat;
 				}
@@ -106,7 +129,64 @@ public class ColorImporter : JSONPersistent
 		{
 				return this.gameObject.name + "_myData";
 		}
-	
+
+		public bool setSize (int newSize)
+		{
+				if (newSize != myData.colors.Length) {
+
+						if (newSize > myData.colors.Length) {
+
+								Color[] newColors = new Color[newSize];
+								myData.colors.CopyTo (newColors, 0);
+								myData.colors = newColors;
+
+								float[] newPercentages = new float[newSize];
+								myData.percentages.CopyTo (newPercentages, 0);
+								myData.percentages = newPercentages;
+
+								// when adding a new Color the % will adjust automaticlly due to the 
+								// inspector script
+
+								return true;
+						} else {
+								int sizeDiff = myData.colors.Length - newSize;
+
+								Color[] newColors = new Color[newSize];
+								float[] newPercentages = new float[newSize];
+								for (int i = 0; i < newColors.Length; i++) {
+										newColors [i] = myData.colors [i];
+										newPercentages [i] = myData.percentages [i];
+								}
+								myData.colors = newColors;
+								myData.percentages = newPercentages;
+
+								// when removing though, the last value will be streched
+								fillUpLastPercentage (sizeDiff);
+
+								return true;
+						}
+				}
+		
+				return false;
+		}
+
+		private void fillUpLastPercentage (int sizeDifference)
+		{
+				float currentTotal = getTotalPct ();
+				if (currentTotal < 1) {
+						myData.percentages [myData.percentages.Length - 1] += (1 - currentTotal);
+				}
+		}
+
+		public float getTotalPct ()
+		{
+				float total = 0;
+				foreach (float pct in myData.percentages) {
+						total += pct;
+				}
+				return total;
+		}
+
 		public override void save ()
 		{
 				fileName = getFileName ();	
@@ -217,8 +297,6 @@ public class ColorImporter : JSONPersistent
 				int percentCount = 0;
 				this.myData.totalWidth = 0;
 
-				//Tag colorBlock = doc.Find ("span.block");// .feature .feature-detail ");
-				
 				IEnumerable<Tag> links = doc.FindAll ("a");
 
 				foreach (Tag a in links) {
@@ -294,26 +372,5 @@ public class ColorImporter : JSONPersistent
 				}
 
 		}
-
-
-		private string[] getColorsHexArray (Color[] colors)
-		{
-				string[] hexArray = new string[5];
-				for (int i = 0; i < colors.Length; i++) {
-						hexArray [i] = JSONPersistor.ColorToHex (colors [i]);
-				}
-				return hexArray;
-		}
-
-		private Color[] getHexArrayColors (string[] hexArray)
-		{
-				Color[] colors = new Color[5];
-				for (int i = 0; i < hexArray.Length; i++) {
-						colors [i] = JSONPersistor.HexToColor (hexArray [i]);
-				}
-				return colors;
-		}
-
-
 
 }

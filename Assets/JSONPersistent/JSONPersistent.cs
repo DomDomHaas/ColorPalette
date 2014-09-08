@@ -43,6 +43,11 @@ public abstract class JSONPersistent : MonoBehaviour
 				fileName = getFileName ();	
 		}
 
+		public bool FileExists ()
+		{
+				return JSONPersistor.Instance.fileExists (getFileName ());
+		}
+
 		public virtual string getFileName ()
 		{
 				return this.gameObject.name + "_" + GetInstanceID ();
