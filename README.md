@@ -10,7 +10,8 @@ Following things are needed:
 - The Playersettings "API Compatibility Level" of Unity has to be set to ".NET 2.0" NOT ".NET 2.0 subset" (otherwise the System.Web is missing)
 
 
-add the ColorPalette.cs script on a gameObject and do 3 steps:
+Then simply add the ColorPalette.cs script on a gameObject.
+To Import Palettes do 3 steps:
 - insert an url which goes directly to either a pltts.me or colourlovers.com palette
 - click on "Import palette from URL"
 - if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
