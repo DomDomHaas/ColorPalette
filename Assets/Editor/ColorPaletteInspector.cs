@@ -6,8 +6,7 @@ using System.Xml.Serialization;
 [CustomEditor(typeof(ColorPalette))]
 public class ColorPaletteInspector : Editor
 { 
-		public float
-				height = 100;
+		public float height = 100;
 
 		private string URL = "";
 		private bool showImporter = false;
@@ -20,6 +19,8 @@ public class ColorPaletteInspector : Editor
 		private float paletteHeight = 100;
 		private float paletteTopMargin = 40;
 		private float paletteBotMargin = 20;
+
+		private float hexFieldWidth = 55;
 
 		private float colorChangerRowHeight = 20;
 		private float colorChangeLeftMargin = 5;
@@ -161,7 +162,7 @@ public class ColorPaletteInspector : Editor
 			
 						string hexString = JSONPersistor.ColorToHex (col);
 						Rect labelHexRect = new Rect (lableRect);
-						labelHexRect.width = 50;
+						labelHexRect.width = hexFieldWidth;
 
 
 						string newHex = EditorGUI.TextField (labelHexRect, hexString);
@@ -240,7 +241,7 @@ public class ColorPaletteInspector : Editor
 						string currentHex = JSONPersistor.ColorToHex (currentColor);
 
 						Rect hexRect = new Rect (colorChangerRect.x + colRect.width + colorChangeMarginBetween,
-			                         				startY, 50, colorChangerRowHeight);
+			                         startY, hexFieldWidth, colorChangerRowHeight);
 
 						string newHex = EditorGUI.TextField (hexRect, currentHex);
 
