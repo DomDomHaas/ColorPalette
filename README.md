@@ -1,7 +1,7 @@
 ColorPalette for Unity
 =============
 
-*ColorPalette* is a plugin for Unity which let's you create ColorPalettes.
+**ColorPalette** is a plugin for Unity which let's you create ColorPalettes.
 It supports loading in Palettes from www.pltts.me / www.colourlovers.com (by now)
 
 Following things are needed:
