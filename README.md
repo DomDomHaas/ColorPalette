@@ -19,7 +19,7 @@ Make sure to click on the **Save-Button** once you're finished!
 
 **To use** the colors you have to do a little coding and access the `myData.colors` or `myData.percentages` via script.
 
-Read here for more details: http://domdomhaas.github.io/ColorPalette/
+[Read here for more details](http://domdomhaas.github.io/ColorPalette/ "Blog post to ColorPalette")
 
 **ColorPaletteImporter**
 ---
@@ -44,7 +44,7 @@ To Import Palettes do 3 steps:
 
 The "load from file" will be called in the Awake of the ColorPalette script. If your using multiple gameobjects with ColorPalette scripts, make sure they have different names.
 
-Read here for more details: http://domdomhaas.github.io/ColorPaletteImporter/
+[Read here for more details](http://domdomhaas.github.io/ColorPaletteImporter/ "Blog post to ColorPaletteImporter")
 
 
 
