@@ -5,7 +5,7 @@ ColorPalettes for Unity
 
 ![Palette UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png "ColorPalette Screenshot")
 
-If you what to use only the ColorPaletts make sure to use following scripts from this repo:
+If you want to use only the ColorPaletts make sure to use following scripts from this repo:
 - PaletteData.cs
 - Palette.cs
 - at least the PaletteInspector.cs from the Editor folder (it has to be put into a "Editor" folder)
@@ -19,7 +19,7 @@ Then add the Palette.cs on a gameobject and start creating your palette. Make su
 
 ![PaletteImporter UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview_Importer.png "ColorPaletteImporter Screenshot")
 
-If you what to use the ColorPalettImporter make sure to include the scripts above and the follwing:
+If you want to use the ColorPalettImporter make sure to include the scripts above and the follwing:
 - PaletteImporterData.cs
 - PaletteImporter.cs
 - All files from the Editor folder
@@ -39,5 +39,6 @@ The "load from file" will be called in the Awake of the ColorPalette script. If 
 
 
 **KNOW ISSUSE**
+---
 So far I haven't had the chance to test it on mobile devices (andoird / iOS builds) and I'm pretty sure it won't work on the webplayer since where would the file be stored!
 
