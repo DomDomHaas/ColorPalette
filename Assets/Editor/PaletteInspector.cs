@@ -2,42 +2,40 @@
 using UnityEditor;
 using System.Collections; 
 using System.Xml.Serialization; 
+using ColorPalette;
 
-[CustomEditor(typeof(ColorPalette))]
-public class ColorPaletteInspector : Editor
+[CustomEditor(typeof(Palette))]
+public class PaletteInspector : Editor
 { 
-		public float height = 100;
+		protected float height = 100;
 
-		private string URL = "";
-		private bool showImporter = false;
-		private bool showPalette = true;
-		private bool changeColors = false;
+		protected bool showPalette = true;
+		protected bool changeColors = false;
 
-		private bool adjustPCTBefore = false;
-		private float minPct = 0.01f;
+		protected bool adjustPCTBefore = false;
+		protected float minPct = 0.01f;
 
-		private float paletteHeight = 100;
-		private float paletteTopMargin = 40;
-		private float paletteBotMargin = 20;
+		protected float paletteHeight = 100;
+		protected float paletteTopMargin = 40;
+		protected float paletteBotMargin = 20;
 
-		private float hexFieldWidth = 55;
+		protected float hexFieldWidth = 55;
 
-		private float colorChangerRowHeight = 20;
-		private float colorChangeLeftMargin = 5;
-		private float colorChangeRightMargin = 20;
-		private float colorChangeMarginBetween = 25;
+		protected float colorChangerRowHeight = 20;
+		protected float colorChangeLeftMargin = 5;
+		protected float colorChangeRightMargin = 20;
+		protected float colorChangeMarginBetween = 25;
 
 	
 	
-		private ColorPalette myPalette;
+		private Palette myPalette;
 
 
 		[ExecuteInEditMode]
 		public void OnEnable ()
 		{
-				myPalette = target as ColorPalette;
+				myPalette = target as Palette;
 				myPalette.init ();
-				URL = myPalette.myData.paletteURL;
 		}
 
 		public override void OnInspectorGUI ()
@@ -45,17 +43,10 @@ public class ColorPaletteInspector : Editor
 				// uncomment for debugging
 				//base.DrawDefaultInspector ();
 
-				myPalette = target as ColorPalette;
+				myPalette = target as Palette;
 		
 				// margin box before buttons
 				GUILayoutUtility.GetRect (Screen.width, 10);
-
-
-				showImporter = EditorGUILayout.Foldout (showImporter, " Import Palette");
-		
-				if (showImporter) {
-						drawURLImporter ();
-				}
 
 
 				showPalette = EditorGUILayout.Foldout (showPalette, " Palette");
@@ -83,44 +74,9 @@ public class ColorPaletteInspector : Editor
 				EditorUtility.SetDirty (myPalette);
 		} 
 
-		private void drawURLImporter ()
-		{
-				// margin box
-				GUILayoutUtility.GetRect (Screen.width, 10);
 
-				GUILayout.Label ("Insert an URL: ");
-				string newURL = EditorGUILayout.TextField (URL);
-				if (!string.IsNullOrEmpty (newURL)) {
-						URL = newURL;
-				}
 
-				GUILayoutUtility.GetRect (Screen.width, 10);
-
-				EditorGUILayout.BeginHorizontal ();
-		
-				myPalette.myData.loadPercent = GUILayout.Toggle (myPalette.myData.loadPercent, " include Palette Percentage");
-		
-		
-				bool import = GUILayout.Button ("import Palette from URL", GUILayout.Width (Screen.width / 2));
-				Event e = Event.current;
-		
-				EditorGUILayout.EndHorizontal ();
-		
-				if (import) {
-						Debug.Log ("import started with " + URL);
-						myPalette.ImportPalette (URL);
-			
-				} else if (e.type == EventType.MouseUp) {
-						// after a non import click check for a URL update (in case of the loadFromFile the url changes)
-						if (myPalette.myData.paletteURL != URL) {
-								URL = myPalette.myData.paletteURL;
-						}
-				}
-
-				GUILayoutUtility.GetRect (Screen.width, 10);
-		}
-
-		private void drawColorPalette ()
+		protected void drawColorPalette ()
 		{
 				// margin box
 				GUILayoutUtility.GetRect (Screen.width, 10);
@@ -177,7 +133,7 @@ public class ColorPaletteInspector : Editor
 
 		}
 
-		private void drawButtons ()
+		protected void drawButtons ()
 		{
 				EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Change the size of the Palette");
@@ -216,7 +172,7 @@ public class ColorPaletteInspector : Editor
 
 		}
 
-		private void drawColorsAndPercentages ()
+		protected void drawColorsAndPercentages ()
 		{
 				GUILayoutUtility.GetRect (Screen.width, 10);
 
@@ -249,6 +205,7 @@ public class ColorPaletteInspector : Editor
 								myPalette.myData.colors [i] = JSONPersistor.HexToColor (newHex);				
 						} else if (!currentColor.ToString ().Equals (newColor.ToString ())) {
 								myPalette.myData.colors [i] = newColor;
+								myPalette.myData.alphas [i] = newColor.a;
 						}
 
 						float currentPct = myPalette.myData.percentages [i];
@@ -268,7 +225,7 @@ public class ColorPaletteInspector : Editor
 		}
 	
 
-		private void adjustPct (int i, float newPct, float currentPct, float maxPct)
+		protected void adjustPct (int i, float newPct, float currentPct, float maxPct)
 		{
 				if (newPct < this.minPct) {
 						newPct = this.minPct;
@@ -311,7 +268,7 @@ public class ColorPaletteInspector : Editor
 		/// <returns><c>true</c>, if neighbor PC was adjusted, <c>false</c> otherwise.</returns>
 		/// <param name="i">The index.</param>
 		/// <param name="pctDiff">Pct diff.</param>
-		private bool adjustNeighborPCT (int i, float pctDiff)
+		protected bool adjustNeighborPCT (int i, float pctDiff)
 		{
 				int neiborIndex = i;
 
