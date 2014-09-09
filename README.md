@@ -1,7 +1,10 @@
 ColorPalettes for Unity
 =============
 
-**ColorPalette** is a plugin for Unity which let's you create ColorPalettes.
+
+**ColorPalette**
+---
+is a plugin for Unity which let's you create ColorPalettes.
 
 ![Palette UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview.png "ColorPalette Screenshot")
 
@@ -15,7 +18,9 @@ Then add the Palette.cs on a gameobject and start creating your palette. Make su
 
 
 
-**ColorPaletteImporter** supports loading in Palettes from www.pltts.me / www.colourlovers.com (by now)
+**ColorPaletteImporter**
+---
+supports loading in Palettes from www.pltts.me / www.colourlovers.com (by now)
 
 ![PaletteImporter UI preview ](https://raw.githubusercontent.com/DomDomHaas/ColorImporter/master/Preview_Importer.png "ColorPaletteImporter Screenshot")
 
