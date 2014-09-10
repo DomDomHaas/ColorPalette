@@ -45,7 +45,7 @@ namespace ColorPalette
 	
 				}
 
-				public override SimpleJSON.JSONClass getDataClass ()
+/*				public override SimpleJSON.JSONClass getDataClass ()
 				{
 						JSONClass jClass = base.getDataClass ();
 
@@ -56,15 +56,15 @@ namespace ColorPalette
 						//Debug.Log ("getDataClass: " + jClass ["colors"].Count + " " + jClass ["percentages"].Count);
 						return jClass;
 				}
-
-				public override void setClassData (SimpleJSON.JSONClass jClass)
+*/
+/*				public override void setClassData (SimpleJSON.JSONClass jClass)
 				{
 						((PaletteImporterData)myData).paletteURL = jClass ["paletteURL"];
 						((PaletteImporterData)myData).loadPercent = jClass ["loadPercent"].AsBool;
 
 						base.setClassData (jClass);
 				}
-
+*/
 				public void ImportPalette (string newURL)
 				{
 						reset ();
@@ -113,7 +113,7 @@ namespace ColorPalette
 												this.myData.percentages [i] = this.myData.percentages [i] / this.myData.totalWidth;
 										}
 								} else {
-										setEvenPercentages ();
+										this.myData.percentages = PaletteData.getDefaultPercentages ();
 								}
 
 						} else if (isPLTTS) {
@@ -230,7 +230,7 @@ namespace ColorPalette
 						}
 
 						if (!((PaletteImporterData)myData).loadPercent) {
-								setEvenPercentages ();
+								this.myData.percentages = PaletteData.getDefaultPercentages ();
 						}
 
 				}

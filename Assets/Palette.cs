@@ -23,19 +23,16 @@ namespace ColorPalette
 				{
 						fileName = getFileName ();
 
-						myData.colors = new Color[5];
-						myData.alphas = new float[5];
-						myData.percentages = new float[5];
 						myData.totalWidth = 0;
 
 						if (JSONPersistor.Instance.fileExists (fileName)) {
 								load ();
 						} else {
 								//default Palette
-								string[] hexArray = new string[]{"69D2E7", "A7DBD8", "E0E4CC", "F38630", "FA6900"};
-								myData.colors = JSONPersistor.getColorsArrayFromHex (hexArray);
-								setFullAlphas ();
-								setEvenPercentages ();
+								
+								myData.colors = PaletteData.getDefaultColors ();
+								myData.alphas = PaletteData.getDefaultAlphas ();
+								myData.percentages = PaletteData.getDefaultPercentages ();
 						}
 				}
 	
@@ -47,7 +44,8 @@ namespace ColorPalette
 
 				public override SimpleJSON.JSONClass getDataClass ()
 				{
-						JSONClass jClass = new JSONClass ();
+						return this.myData.getJsonPalette ();
+/*						JSONClass jClass = new JSONClass ();
 
 						string[] hexArray = JSONPersistor.getHexArrayFromColors (myData.colors);
 
@@ -68,11 +66,13 @@ namespace ColorPalette
 
 						//Debug.Log ("getDataClass: " + jClass ["colors"].Count + " " + jClass ["percentages"].Count);
 						return jClass;
+*/
 				}
 
 				public override void setClassData (SimpleJSON.JSONClass jClass)
 				{
-						int size = jClass ["colors"].Count;
+						this.myData.setPalette (jClass);
+/*						int size = jClass ["colors"].Count;
 
 						string[] hexArray = new string[size];
 
@@ -107,7 +107,7 @@ namespace ColorPalette
 								myData.percentages [i] = jClass ["percentages"] [i].AsFloat;
 						}
 
-						myData.totalWidth = jClass ["totalWidth"].AsFloat;
+						myData.totalWidth = jClass ["totalWidth"].AsFloat;*/
 				}
 
 				public virtual string getFileName ()
@@ -192,15 +192,6 @@ namespace ColorPalette
 						base.load ();
 				}
 			
-				protected void setFullAlphas ()
-				{
-						this.myData.alphas = new float[]{1f, 1f, 1f, 1f, 1f};
-				}
-
-				protected void setEvenPercentages ()
-				{
-						this.myData.percentages = new float[]{0.2f, 0.2f, 0.2f, 0.2f, 0.2f};
-				}
 
 
 		}
