@@ -8,7 +8,7 @@ using SimpleJSON;
 public class JSONPersistor
 {
 
-		public static readonly string filePath = Application.dataPath + "/" + "SaveLoadObjects";
+		public static readonly string filePath = "/SaveLoadObjects";
 		public static readonly string startArray = "{";
 		public static readonly string endArray = "}";
 		public static readonly string nextEntry = ",";
@@ -38,12 +38,12 @@ public class JSONPersistor
 
 		public bool directoryExists (string dirName)
 		{
-				return Directory.Exists (filePath);
+				return Directory.Exists (Application.dataPath + filePath);
 		}
 
 		public string getFullFilePath (string fileName)
 		{
-				return filePath + "//" + fileName + ".txt";
+				return Application.dataPath + filePath + "//" + fileName + ".txt";
 		}
 
 		public void saveToFile (string fileName, JSONClass data)
@@ -54,8 +54,8 @@ public class JSONPersistor
 
 		public void saveToFile (string fileName, JSONArray jArray)
 		{
-/*		if (!directoryExists (filePath)) {
-			Directory.CreateDirectory (filePath);
+				/*		if (!directoryExists (Application.dataPath + filePath)) {
+			Directory.CreateDirectory (Application.dataPath + filePath);
 		}
 		
 		if (!fileExists (fileName)) {

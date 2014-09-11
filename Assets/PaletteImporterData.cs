@@ -9,7 +9,8 @@ namespace ColorPalette
 		{
 				public PaletteImporterData () : base()
 				{
-
+						this.paletteURL = "";
+						this.loadPercent = false;
 				}
 
 				[SerializeField]

@@ -12,15 +12,15 @@ public class PaletteImporterInspector : PaletteInspector
 		private bool showImporter = false;
 
 	
-		private PaletteImporter myPalette;
+		private PaletteImporter myPaletteImporter;
 
 
 		[ExecuteInEditMode]
-		public void OnEnable ()
+		new public void OnEnable ()
 		{
-				myPalette = target as PaletteImporter;
-				myPalette.init ();
-				URL = ((PaletteImporterData)myPalette.myData).paletteURL;
+				myPaletteImporter = target as PaletteImporter;
+				myPaletteImporter.init ();
+				URL = myPaletteImporter.myImporterData.paletteURL;
 		}
 
 		public override void OnInspectorGUI ()
@@ -28,7 +28,7 @@ public class PaletteImporterInspector : PaletteInspector
 				// uncomment for debugging
 				//base.DrawDefaultInspector ();
 
-				myPalette = target as PaletteImporter;
+				myPaletteImporter = target as PaletteImporter;
 		
 				// margin box before buttons
 				GUILayoutUtility.GetRect (Screen.width, 10);
@@ -40,7 +40,32 @@ public class PaletteImporterInspector : PaletteInspector
 						drawURLImporter ();
 				}
 
-				base.OnInspectorGUI ();
+
+
+				showPalette = EditorGUILayout.Foldout (showPalette, " Palette");
+		
+				if (showPalette) {
+						myPaletteImporter.myImporterData = drawColorPalette (myPaletteImporter.myImporterData) as PaletteImporterData;
+				}
+		
+		
+				changeColors = EditorGUILayout.Foldout (changeColors, " Change Colors");
+		
+				if (changeColors) {
+						myPaletteImporter.myImporterData = drawColorsAndPercentages (myPaletteImporter.myImporterData) as PaletteImporterData;
+				}
+		
+				// margin box
+				GUILayoutUtility.GetRect (Screen.width, 25);
+		
+				myPaletteImporter.myImporterData = drawSizeButtons (myPaletteImporter.myImporterData) as PaletteImporterData;
+		
+				drawSaveButtons ();
+		
+				// margin box
+				GUILayoutUtility.GetRect (Screen.width, 25);
+		 
+
 		} 
 
 		protected void drawURLImporter ()
@@ -57,27 +82,53 @@ public class PaletteImporterInspector : PaletteInspector
 				GUILayoutUtility.GetRect (Screen.width, 10);
 
 				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.BeginVertical ();
+
+				myPaletteImporter.myImporterData.loadPercent = GUILayout.Toggle (myPaletteImporter.myImporterData.loadPercent, " include Palette Percentage");
 		
-				((PaletteImporterData)myPalette.myData).loadPercent = GUILayout.Toggle (((PaletteImporterData)myPalette.myData).loadPercent, " include Palette Percentage");
-		
-		
-				bool import = GUILayout.Button ("import Palette from URL", GUILayout.Width (Screen.width / 2));
+				EditorGUILayout.EndVertical ();
+
+				bool import = GUILayout.Button (new GUIContent ("Import from URL", "this might take a few seconds!"),
+		                                		GUILayout.Width (Screen.width / 2));
+
 				Event e = Event.current;
 		
 				EditorGUILayout.EndHorizontal ();
 		
 				if (import) {
 						Debug.Log ("import started with " + URL);
-						myPalette.ImportPalette (URL);
+						myPaletteImporter.ImportPalette (URL);
 			
 				} else if (e.type == EventType.MouseUp) {
 						// after a non import click check for a URL update (in case of the loadFromFile the url changes)
-						if (((PaletteImporterData)myPalette.myData).paletteURL != URL) {
-								URL = ((PaletteImporterData)myPalette.myData).paletteURL;
+						if (myPaletteImporter.myImporterData.paletteURL != URL) {
+								URL = myPaletteImporter.myImporterData.paletteURL;
 						}
 				}
 
 				GUILayoutUtility.GetRect (Screen.width, 10);
+		}
+
+		protected virtual void drawSaveButtons ()
+		{
+		
+				GUILayout.Space (10);
+		
+				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("Storing the Palette");
+				EditorGUILayout.EndHorizontal ();
+		
+				EditorGUILayout.BeginHorizontal ();
+		
+				if (GUILayout.Button ("Save to File", GUILayout.Width (Screen.width / 2))) { 
+						myPaletteImporter.save ();
+				} 
+		
+				if (GUILayout.Button ("Load from File", GUILayout.Width (Screen.width / 2))) { 
+						myPaletteImporter.load ();
+				} 
+		
+				EditorGUILayout.EndHorizontal ();
 		}
 
 

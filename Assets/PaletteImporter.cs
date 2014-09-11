@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HtmlSharp;
 using HtmlSharp.Elements;
+using HtmlSharp.Extensions;
 using SimpleJSON;
 
 namespace ColorPalette
@@ -16,12 +17,13 @@ namespace ColorPalette
 				private bool isPLTTS = false;
 				private bool isLocalFile = false;
 
+				public PaletteImporterData myImporterData;
 
 				//new public PaletteData myData;
 
 
 				// Use this for initialization
-				void Awake ()
+				new void Awake ()
 				{
 						init ();
 				}
@@ -32,9 +34,7 @@ namespace ColorPalette
 						isPLTTS = false;
 						isLocalFile = false;
 
-						myData = new PaletteImporterData ();
-						((PaletteImporterData)myData).paletteURL = "";
-						((PaletteImporterData)myData).loadPercent = false;
+						myImporterData = new PaletteImporterData ();
 
 						base.init ();
 				}
@@ -94,26 +94,26 @@ namespace ColorPalette
 						}
 
 						Debug.Log ("download finished, loaded " + html.bytesDownloaded + " bytes");
-						((PaletteImporterData)myData).paletteURL = newURL;
+						this.myImporterData.paletteURL = newURL;
 
 						HtmlParser parser = new HtmlParser ();
 						Document doc = parser.Parse (html.text);
 
-						this.myData.colors = new Color[5];
-						this.myData.percentages = new float[5];
+						this.myImporterData.colors = new Color[5];
+						this.myImporterData.percentages = new float[5];
 
 						if (isColourLovers) {
 
 								extractFromColorlovers (doc);
 
-								if (((PaletteImporterData)myData).loadPercent) {
+								if (this.myImporterData.loadPercent) {
 				
-										for (int i = 0; i < this.myData.percentages.Length; i++) {
+										for (int i = 0; i < this.myImporterData.percentages.Length; i++) {
 												// totalWidth = 100% this.myData.percentages [i] = x%
-												this.myData.percentages [i] = this.myData.percentages [i] / this.myData.totalWidth;
+												this.myImporterData.percentages [i] = this.myImporterData.percentages [i] / this.myImporterData.totalWidth;
 										}
 								} else {
-										this.myData.percentages = PaletteData.getDefaultPercentages ();
+										this.myImporterData.percentages = PaletteData.getDefaultPercentages ();
 								}
 
 						} else if (isPLTTS) {
@@ -150,14 +150,27 @@ namespace ColorPalette
 								}
 						}
 
-						((PaletteImporterData)myData).paletteURL = URL;
+						myImporterData.paletteURL = URL;
 				}
 
 				private void extractFromColorlovers (Document doc)
 				{
 						int colorCount = 0;
 						int percentCount = 0;
-						this.myData.totalWidth = 0;
+						this.myImporterData.totalWidth = 0;
+
+						IEnumerable<Tag> headerTags = doc.FindAll ("h1");
+						foreach (Tag headerTag in headerTags) {
+//								if (!string.IsNullOrEmpty (headerTag.c)) {
+
+
+								//this.myImporterData.name = headerTag.ToString ();
+								Debug.Log (headerTag.ToString ().HtmlDecode ());
+								//["class"] == "feature-detail-container") {
+
+//								}
+						}
+
 
 						IEnumerable<Tag> links = doc.FindAll ("a");
 
@@ -166,19 +179,19 @@ namespace ColorPalette
 
 										string style = a ["style"];
 										foreach (string styleCss in style.Split (';')) {
-												if (((PaletteImporterData)myData).loadPercent && styleCss.Contains ("width")) {
+												if (myImporterData.loadPercent && styleCss.Contains ("width")) {
 
 														string width = styleCss.Split (':') [1];
 														width = width.Substring (0, width.IndexOf ("px"));
 														float widthF = float.Parse (width.Trim ());
-														this.myData.totalWidth += widthF;
-														this.myData.percentages [percentCount++] = widthF;
+														this.myImporterData.totalWidth += widthF;
+														this.myImporterData.percentages [percentCount++] = widthF;
 
 												} else if (styleCss.Contains ("background-color")) {
 
 														string bgColor = styleCss.Split (':') [1];
 														bgColor = bgColor.Trim ().Substring (1);
-														this.myData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
+														this.myImporterData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
 												}
 										}
 
@@ -194,7 +207,7 @@ namespace ColorPalette
 				{
 						int colorCount = 0;
 						int percentCount = 0;
-						this.myData.totalWidth = 0;
+						this.myImporterData.totalWidth = 0;
 
 						Tag colorBlock = doc.Find (".palette-colors");
 						//Debug.Log (colorBlock);
@@ -209,19 +222,19 @@ namespace ColorPalette
 
 										string style = colorTag ["style"];
 										foreach (string styleCss in style.Split (';')) {
-												if (((PaletteImporterData)myData).loadPercent && styleCss.Contains ("width")) {
+												if (myImporterData.loadPercent && styleCss.Contains ("width")) {
 						
 														string width = styleCss.Split (':') [1];
 														width = width.Substring (0, width.IndexOf ("%"));
 														float widthF = float.Parse (width.Trim ());
-														this.myData.totalWidth += widthF / 100;
-														this.myData.percentages [percentCount++] = widthF / 100;
+														this.myImporterData.totalWidth += widthF / 100;
+														this.myImporterData.percentages [percentCount++] = widthF / 100;
 						
 												} else if (styleCss.Contains ("background-color")) {
 						
 														string bgColor = styleCss.Split (':') [1];
 														bgColor = bgColor.Trim ().Substring (1);
-														this.myData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
+														this.myImporterData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
 												}
 										}
 				
@@ -229,10 +242,20 @@ namespace ColorPalette
 								}
 						}
 
-						if (!((PaletteImporterData)myData).loadPercent) {
-								this.myData.percentages = PaletteData.getDefaultPercentages ();
+						if (!myImporterData.loadPercent) {
+								this.myImporterData.percentages = PaletteData.getDefaultPercentages ();
 						}
 
+				}
+
+				public override JSONClass getDataClass ()
+				{
+						return this.myImporterData.getJsonPalette ();
+				}
+		
+				public override void setClassData (JSONClass jClass)
+				{
+						this.myImporterData.setPalette (jClass);
 				}
 
 		}

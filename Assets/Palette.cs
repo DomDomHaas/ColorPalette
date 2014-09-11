@@ -11,28 +11,23 @@ namespace ColorPalette
 		public class Palette : JSONPersistent
 		{
 
-				public PaletteData myData = new PaletteData ();
+				public PaletteData myData;
 
 				// Use this for initialization
-				void Awake ()
+				new void Awake ()
 				{
 						init ();
 				}
 
 				public void init ()
 				{
+						myData = new PaletteData ();
+
 						fileName = getFileName ();
 
-						myData.totalWidth = 0;
 
 						if (JSONPersistor.Instance.fileExists (fileName)) {
 								load ();
-						} else {
-								//default Palette
-								
-								myData.colors = PaletteData.getDefaultColors ();
-								myData.alphas = PaletteData.getDefaultAlphas ();
-								myData.percentages = PaletteData.getDefaultPercentages ();
 						}
 				}
 	
@@ -110,76 +105,11 @@ namespace ColorPalette
 						myData.totalWidth = jClass ["totalWidth"].AsFloat;*/
 				}
 
-				public virtual string getFileName ()
+				public override string getFileName ()
 				{
 						return this.gameObject.name + "_myData";
 				}
-
-				public bool setSize (int newSize)
-				{
-						if (newSize != myData.colors.Length) {
-
-								if (newSize > myData.colors.Length) {
-
-										Color[] newColors = new Color[newSize];
-										myData.colors.CopyTo (newColors, 0);
-										myData.colors = newColors;
-
-										float[] newAlphas = new float[newSize];
-										myData.alphas.CopyTo (newAlphas, 0);
-										myData.alphas = newAlphas;
-
-										float[] newPercentages = new float[newSize];
-										myData.percentages.CopyTo (newPercentages, 0);
-										myData.percentages = newPercentages;
-
-										// when adding a new Color the % will adjust automaticlly due to the 
-										// inspector script
-
-										return true;
-								} else {
-										int sizeDiff = myData.colors.Length - newSize;
-
-										Color[] newColors = new Color[newSize];
-										float[] newAlphas = new float[newSize];
-										float[] newPercentages = new float[newSize];
-
-										for (int i = 0; i < newColors.Length; i++) {
-												newColors [i] = myData.colors [i];
-												newAlphas [i] = myData.colors [i].a;
-												newPercentages [i] = myData.percentages [i];
-										}
-										myData.colors = newColors;
-										myData.alphas = newAlphas;
-										myData.percentages = newPercentages;
-
-										// when removing though, the last value will be streched
-										fillUpLastPercentage (sizeDiff);
-
-										return true;
-								}
-						}
-		
-						return false;
-				}
-
-				protected void fillUpLastPercentage (int sizeDifference)
-				{
-						float currentTotal = getTotalPct ();
-						if (currentTotal < 1) {
-								myData.percentages [myData.percentages.Length - 1] += (1 - currentTotal);
-						}
-				}
-
-				public float getTotalPct ()
-				{
-						float total = 0;
-						foreach (float pct in myData.percentages) {
-								total += pct;
-						}
-						return total;
-				}
-
+						
 				public override void save ()
 				{
 						fileName = getFileName ();	

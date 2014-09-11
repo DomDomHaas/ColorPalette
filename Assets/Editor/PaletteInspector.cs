@@ -46,29 +46,36 @@ public class PaletteInspector : Editor
 				myPalette = target as Palette;
 		
 				// margin box before buttons
-				GUILayoutUtility.GetRect (Screen.width, 10);
+				GUILayout.Space (10);
 
+/*				Rect foldOutRect = GUILayoutUtility.GetRect (Screen.width, 15);
+				Rect foldOutToggleRect = new Rect (0, foldOutRect.y, 30, foldOutRect.height);
 
-				showPalette = EditorGUILayout.Foldout (showPalette, " Palette");
+*/
+				showPalette = EditorGUILayout.Foldout (showPalette, " ColorPalette");
+
+				//Rect foldOutTextRect = new Rect (50, foldOutRect.y, Screen.width - 10, foldOutRect.height);
 
 				if (showPalette) {
-						drawColorPalette ();
+						myPalette.myData = drawColorPalette (myPalette.myData);
 				}
 
 
 				changeColors = EditorGUILayout.Foldout (changeColors, " Change Colors");
 
 				if (changeColors) {
-						drawColorsAndPercentages ();
+						myPalette.myData = drawColorsAndPercentages (myPalette.myData);
 				}
 
 				// margin box
-				GUILayoutUtility.GetRect (Screen.width, 25);
+				GUILayout.Space (25);
 
-				drawButtons ();
+				myPalette.myData = drawSizeButtons (myPalette.myData);
+
+				drawSaveButtons ();
 
 				// margin box
-				GUILayoutUtility.GetRect (Screen.width, 25);
+				GUILayout.Space (25);
 
 
 				EditorUtility.SetDirty (myPalette);
@@ -76,64 +83,71 @@ public class PaletteInspector : Editor
 
 
 
-		protected void drawColorPalette ()
+		protected virtual PaletteData drawColorPalette (PaletteData data)
 		{
-				// margin box
-				GUILayoutUtility.GetRect (Screen.width, 10);
-
 				// palette height silder
 				//height = EditorGUILayout.Slider ("Height", height, 100, 200);
 		
 				//paletteHeight = height;
-		
+				EditorGUILayout.BeginHorizontal ();
+
+				data.name = EditorGUILayout.TextField ("Palette name: ", data.name);
+
+				EditorGUILayout.EndHorizontal ();
+
+				GUILayout.Space (10);
+
 				Rect paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight + paletteTopMargin);
 		
-		
-				// show the palette
-				float start = 20;
-				float end = 0;
-				for (int i = 0; i < myPalette.myData.colors.Length; i++) {
-						Color col = myPalette.myData.colors [i];
-						float colWidth = myPalette.myData.percentages [i] * (Screen.width - 35);
 
-						//Debug.Log (i + " starts " + start + " width " + colWidth);
+				if (data.colors != null) {
+						// show the palette
+						float start = 20;
 
-						Rect colRect = new Rect (start,
+						for (int i = 0; i < data.colors.Length; i++) {
+								Color col = data.colors [i];
+								float colWidth = data.percentages [i] * (Screen.width - 35);
+
+								//Debug.Log (i + " starts " + start + " width " + colWidth);
+
+								Rect colRect = new Rect (start,
 			                         paletteRect.position.y + paletteTopMargin,
 			                         colWidth,
 			                         paletteHeight - paletteBotMargin);
 			
-						EditorGUIUtility.DrawColorSwatch (colRect, col);
+								EditorGUIUtility.DrawColorSwatch (colRect, col);
 			
-						Rect lableRect = colRect;
-						lableRect.width = 60;
-						lableRect.height = 15;
+								Rect lableRect = colRect;
+								lableRect.width = 60;
+								lableRect.height = 15;
 			
-						lableRect.y -= paletteTopMargin * 0.5f;
+								lableRect.y -= paletteTopMargin * 0.5f;
 			
-						if (i % 2 == 0) {
-								lableRect.y -= 15;
+								if (i % 2 == 0) {
+										lableRect.y -= 15;
+								}
+			
+			
+								string hexString = JSONPersistor.ColorToHex (col);
+								Rect labelHexRect = new Rect (lableRect);
+								labelHexRect.width = hexFieldWidth;
+
+
+								string newHex = EditorGUI.TextField (labelHexRect, hexString);
+
+								if (!newHex.Equals (JSONPersistor.ColorToHex (col))) {
+										data.colors [i] = JSONPersistor.HexToColor (newHex);
+								}
+
+			
+								start += colWidth;
 						}
-			
-			
-						string hexString = JSONPersistor.ColorToHex (col);
-						Rect labelHexRect = new Rect (lableRect);
-						labelHexRect.width = hexFieldWidth;
-
-
-						string newHex = EditorGUI.TextField (labelHexRect, hexString);
-
-						if (!newHex.Equals (JSONPersistor.ColorToHex (col))) {
-								myPalette.myData.colors [i] = JSONPersistor.HexToColor (newHex);
-						}
-
-			
-						start += colWidth;
 				}
 
+				return data;
 		}
 
-		protected void drawButtons ()
+		protected virtual PaletteData drawSizeButtons (PaletteData data)
 		{
 				EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Change the size of the Palette");
@@ -142,14 +156,20 @@ public class PaletteInspector : Editor
 				EditorGUILayout.BeginHorizontal ();
 
 				if (GUILayout.Button ("Add Color", GUILayout.Width (Screen.width / 2))) { 
-						myPalette.setSize (myPalette.myData.colors.Length + 1);
+						data.setSize (data.colors.Length + 1);
 				} 
 
 				if (GUILayout.Button ("Remove last Color", GUILayout.Width (Screen.width / 2))) { 
-						myPalette.setSize (myPalette.myData.colors.Length - 1);
+						data.setSize (data.colors.Length - 1);
 				} 
 
 				EditorGUILayout.EndHorizontal ();
+
+				return data;
+		}
+
+		protected virtual void drawSaveButtons ()
+		{
 
 				GUILayoutUtility.GetRect (Screen.width, 10);
 
@@ -168,17 +188,15 @@ public class PaletteInspector : Editor
 				} 
 		
 				EditorGUILayout.EndHorizontal ();
-
-
 		}
 
-		protected void drawColorsAndPercentages ()
+		protected virtual PaletteData drawColorsAndPercentages (PaletteData data)
 		{
 				GUILayoutUtility.GetRect (Screen.width, 10);
 
 				adjustPCTBefore = GUILayout.Toggle (adjustPCTBefore, " adjust percentage to the left");
 
-				Rect colorChangerRect = GUILayoutUtility.GetRect (Screen.width, myPalette.myData.colors.Length * colorChangerRowHeight);
+				Rect colorChangerRect = GUILayoutUtility.GetRect (Screen.width, data.colors.Length * colorChangerRowHeight);
 				colorChangerRect.x += colorChangeLeftMargin;
 				colorChangerRect.width -= colorChangeRightMargin;
 
@@ -186,12 +204,12 @@ public class PaletteInspector : Editor
 
 				float startY = colorChangerRect.y + 10;
 
-				for (int i = 0; i < myPalette.myData.colors.Length; i++) {
+				for (int i = 0; i < data.colors.Length; i++) {
 						// draw a little preview of the current color
 						Rect colRect = new Rect (colorChangerRect.x, startY,
 			                         				150, colorChangerRowHeight);
 			
-						Color currentColor = myPalette.myData.colors [i];
+						Color currentColor = data.colors [i];
 						Color newColor = EditorGUI.ColorField (colRect, currentColor);
 		
 						string currentHex = JSONPersistor.ColorToHex (currentColor);
@@ -202,14 +220,14 @@ public class PaletteInspector : Editor
 						string newHex = EditorGUI.TextField (hexRect, currentHex);
 
 						if (!currentHex.Equals (newHex)) {
-								myPalette.myData.colors [i] = JSONPersistor.HexToColor (newHex);				
+								data.colors [i] = JSONPersistor.HexToColor (newHex);				
 						} else if (!currentColor.ToString ().Equals (newColor.ToString ())) {
-								myPalette.myData.colors [i] = newColor;
-								myPalette.myData.alphas [i] = newColor.a;
+								data.colors [i] = newColor;
+								data.alphas [i] = newColor.a;
 						}
 
-						float currentPct = myPalette.myData.percentages [i];
-						float maxPct = 1.0f - (myPalette.myData.percentages.Length - 1) * this.minPct;
+						float currentPct = data.percentages [i];
+						float maxPct = 1.0f - (data.percentages.Length - 1) * this.minPct;
 						//Debug.Log ("max % " + maxPct);
 
 						Rect silderRect = new Rect (colorChangerRect.x + colRect.width + colorChangeMarginBetween + hexRect.width + colorChangeMarginBetween, startY,
@@ -217,15 +235,17 @@ public class PaletteInspector : Editor
 			                            colorChangerRowHeight);
 
 						float newPct = EditorGUI.Slider (silderRect, currentPct, this.minPct, maxPct);
-						adjustPct (i, newPct, currentPct, maxPct);
+						data = adjustPct (data, i, newPct, currentPct, maxPct);
 			
 
 						startY += colorChangerRowHeight;
 				}
+
+				return data;
 		}
 	
 
-		protected void adjustPct (int i, float newPct, float currentPct, float maxPct)
+		protected virtual PaletteData adjustPct (PaletteData data, int i, float newPct, float currentPct, float maxPct)
 		{
 				if (newPct < this.minPct) {
 						newPct = this.minPct;
@@ -239,27 +259,26 @@ public class PaletteInspector : Editor
 
 						//if (adjustNeighborPCT (i, currentPct - newPct)) {
 
-						adjustNeighborPCT (i, currentPct - newPct);
-						myPalette.myData.percentages [i] = newPct;
+						data = adjustNeighborPCT (data, i, currentPct - newPct);
+						data.percentages [i] = newPct;
 
 						// changes been made to neighbors, check if totalPcts is still 1 -> 100%
-						float totalPcts = myPalette.getTotalPct ();
+						float totalPcts = data.getTotalPct ();
 				
 						if (totalPcts >= 1f) {
 								float rounding = totalPcts - 1f;
 								if (rounding > 0) {
 										//Debug.Log ("rounding " + newPct + " minus " + rounding + " to " + (newPct - rounding));
 										// always cut the last for the rounding!
-										myPalette.myData.percentages [myPalette.myData.percentages.Length - 1] -= rounding;
+										data.percentages [data.percentages.Length - 1] -= rounding;
 								} else if (rounding < 0) {
-										myPalette.myData.percentages [myPalette.myData.percentages.Length - 1] += rounding;
+										data.percentages [data.percentages.Length - 1] += rounding;
 								}
 						}
 
 				}
 
-
-		
+				return data;
 		}
 	
 		/// <summary>
@@ -268,7 +287,7 @@ public class PaletteInspector : Editor
 		/// <returns><c>true</c>, if neighbor PC was adjusted, <c>false</c> otherwise.</returns>
 		/// <param name="i">The index.</param>
 		/// <param name="pctDiff">Pct diff.</param>
-		protected bool adjustNeighborPCT (int i, float pctDiff)
+		protected virtual PaletteData adjustNeighborPCT (PaletteData data, int i, float pctDiff)
 		{
 				int neiborIndex = i;
 
@@ -276,25 +295,25 @@ public class PaletteInspector : Editor
 						if (i - 1 >= 0) {
 								neiborIndex = i - 1;
 						} else {
-								neiborIndex = myPalette.myData.percentages.Length - 1;
+								neiborIndex = data.percentages.Length - 1;
 						}
 				} else {
-						if (i + 1 <= myPalette.myData.percentages.Length - 1) {
+						if (i + 1 <= data.percentages.Length - 1) {
 								neiborIndex = i + 1;
 						} else {
 								neiborIndex = 0;
 						}
 				}
 
-				myPalette.myData.percentages [neiborIndex] += pctDiff;
-				float newNeighborValue = myPalette.myData.percentages [neiborIndex];
+				data.percentages [neiborIndex] += pctDiff;
+				float newNeighborValue = data.percentages [neiborIndex];
 
 				if (newNeighborValue < this.minPct) {
-						myPalette.myData.percentages [neiborIndex] = this.minPct;
-						adjustNeighborPCT (neiborIndex, newNeighborValue - this.minPct);
+						data.percentages [neiborIndex] = this.minPct;
+						data = adjustNeighborPCT (data, neiborIndex, newNeighborValue - this.minPct);
 				}
 		
-				return true;
+				return data;
 		} 
 
 
