@@ -14,10 +14,12 @@ If you want to use only the ColorPaletts make sure to use following scripts from
 - at least the PaletteInspector.cs from the Editor folder (it has to be put into a "Editor" folder)
 - All files of the folder **JSONPersistent** (it's actually another Tool for saving things to a txt-file)
 
-Then add the Palette.cs on a gameobject and start creating your palette. Make sure to click on the **Save-Button** once you're finished!
+Then add the Palette.cs on a gameobject and start creating your palette.
+Make sure to click on the **Save-Button** once you're finished!
 
 **To use** the colors you have to do a little coding and access the `myData.colors` or `myData.percentages` via script.
 
+[Read here for more details](http://domdomhaas.github.io/ColorPalette/ "Blog post to ColorPalette")
 
 **ColorPaletteImporter**
 ---
@@ -40,8 +42,10 @@ To Import Palettes do 3 steps:
 - if you like what you see click on "Save to File" on ensure the colors and percentages will be stored
 
 
-
 The "load from file" will be called in the Awake of the ColorPalette script. If your using multiple gameobjects with ColorPalette scripts, make sure they have different names.
+
+[Read here for more details](http://domdomhaas.github.io/ColorPaletteImporter/ "Blog post to ColorPaletteImporter")
+
 
 
 **KNOW ISSUSE**
