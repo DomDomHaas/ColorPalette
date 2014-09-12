@@ -42,7 +42,7 @@ public class PaletteImporterInspector : PaletteInspector
 
 
 
-				showPalette = EditorGUILayout.Foldout (showPalette, " Palette");
+				showPalette = EditorGUILayout.Foldout (showPalette, myPaletteImporter.myImporterData.name + " ColorPalette");
 		
 				if (showPalette) {
 						myPaletteImporter.myImporterData = drawColorPalette (myPaletteImporter.myImporterData) as PaletteImporterData;

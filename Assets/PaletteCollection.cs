@@ -75,14 +75,7 @@ namespace ColorPalette
 				}
 
 
-				public void ImportPaletteCollection (string newURL)
-				{
-						reset ();
-						this.importIsRunning = true;
 
-						StartCoroutine (ImportPaletteCollectionFromURL (newURL));
-				}
-		
 				private void reset ()
 				{
 						this.isColourLovers = false;
@@ -92,12 +85,13 @@ namespace ColorPalette
 						this.importedBytes = 0;
 				}
 		
-				private IEnumerator ImportPaletteCollectionFromURL (string newURL)
+				public bool ImportPaletteCollection (string newURL)
 				{
+						reset ();
+
 						analizeURL (newURL);
 			
 						WWW html = new WWW (newURL);
-
 
 						while (!html.isDone) {
 				
@@ -114,20 +108,38 @@ namespace ColorPalette
 						HtmlParser parser = new HtmlParser ();
 						Document doc = parser.Parse (html.text);
 
-						Debug.Log (doc.ToString ());
-			
+						//Debug.Log (doc.ToString ());
+
+						PaletteData extracedData = null;
+
 						if (isColourLovers) {
 				
-								extractFromColorlovers (doc);
+								extracedData = PaletteImporter.extractFromColorlovers (doc, this.collectionData.loadPercent);
+
+								if (this.collectionData.loadPercent) {
+					
+										for (int i = 0; i < extracedData.percentages.Length; i++) {
+												// totalWidth = 100% this.myData.percentages [i] = x%
+												extracedData.percentages [i] = extracedData.percentages [i] / extracedData.totalWidth;
+										}
+								} else {
+										extracedData.percentages = PaletteData.getDefaultPercentages ();
+								}
 
 						} else if (isPLTTS) {
-								//extractFromPLTTS (doc);
+								extracedData = PaletteImporter.extractFromPLTTS (doc, this.collectionData.loadPercent);
 						}
-
-						this.importIsRunning = false;
-
-						yield return null;
+						
+/*						if (extracedData != null) {
+								return CreatePalette (new KeyValuePair<string, PaletteData> (extracedData.name, extracedData));
+						} else {
+								Debug.Log ("Palette :'" + extracedData.percentages [0] + "' could not be load... is the URL correct? ");
+								return false;
+						}
+*/
+						return CreatePalette (new KeyValuePair<string, PaletteData> (extracedData.name, extracedData));
 				}
+
 
 				private void analizeURL (string URL)
 				{
@@ -158,7 +170,8 @@ namespace ColorPalette
 						collectionData.paletteURL = URL;
 				}
 
-				private void extractFromColorlovers (Document doc)
+				/*
+				private void extractCollectionFromColorlovers (Document doc)
 				{
 						int colorCount = 0;
 						int percentCount = 0;
@@ -186,7 +199,6 @@ namespace ColorPalette
 
 										//Debug.Log ("id: " + div ["id"] + " class: " + div ["class"]);
 
-										/*
 
 										string style = a ["style"];
 										foreach (string styleCss in style.Split (';')) {
@@ -217,7 +229,6 @@ namespace ColorPalette
 
 
 										}
-				*/
 
 
 								}
@@ -227,11 +238,12 @@ namespace ColorPalette
 			
 			
 				}
+				*/
 
 				/*
 
 		
-				private void extractFromPLTTS (Document doc)
+				private void extractCollectionFromPLTTS (Document doc)
 				{
 						int colorCount = 0;
 						int percentCount = 0;

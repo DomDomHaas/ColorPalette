@@ -52,7 +52,7 @@ public class PaletteInspector : Editor
 				Rect foldOutToggleRect = new Rect (0, foldOutRect.y, 30, foldOutRect.height);
 
 */
-				showPalette = EditorGUILayout.Foldout (showPalette, " ColorPalette");
+				showPalette = EditorGUILayout.Foldout (showPalette, myPalette.myData.name + " ColorPalette");
 
 				//Rect foldOutTextRect = new Rect (50, foldOutRect.y, Screen.width - 10, foldOutRect.height);
 
@@ -83,11 +83,13 @@ public class PaletteInspector : Editor
 
 
 
-		protected virtual PaletteData drawColorPalette (PaletteData data)
+		protected virtual PaletteData drawColorPalette (PaletteData data, bool showHexValues = false)
 		{
 				// palette height silder
 				//height = EditorGUILayout.Slider ("Height", height, 100, 200);
-		
+
+				GUILayout.Space (10);
+
 				//paletteHeight = height;
 				EditorGUILayout.BeginHorizontal ();
 
@@ -97,7 +99,11 @@ public class PaletteInspector : Editor
 
 				GUILayout.Space (10);
 
-				Rect paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight + paletteTopMargin);
+				Rect paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight);
+
+				if (showHexValues) {
+						paletteRect.height = paletteHeight + paletteTopMargin;
+				}
 		
 
 				if (data.colors != null) {
@@ -109,10 +115,13 @@ public class PaletteInspector : Editor
 								float colWidth = data.percentages [i] * (Screen.width - 35);
 
 								//Debug.Log (i + " starts " + start + " width " + colWidth);
+								float yPos = paletteRect.position.y;
 
-								Rect colRect = new Rect (start,
-			                         paletteRect.position.y + paletteTopMargin,
-			                         colWidth,
+								if (showHexValues) {
+										yPos = paletteRect.position.y + paletteTopMargin;
+								}
+
+								Rect colRect = new Rect (start, yPos, colWidth,
 			                         paletteHeight - paletteBotMargin);
 			
 								EditorGUIUtility.DrawColorSwatch (colRect, col);
@@ -127,16 +136,17 @@ public class PaletteInspector : Editor
 										lableRect.y -= 15;
 								}
 			
-			
-								string hexString = JSONPersistor.ColorToHex (col);
-								Rect labelHexRect = new Rect (lableRect);
-								labelHexRect.width = hexFieldWidth;
+								if (showHexValues) {
+										string hexString = JSONPersistor.ColorToHex (col);
+										Rect labelHexRect = new Rect (lableRect);
+										labelHexRect.width = hexFieldWidth;
 
 
-								string newHex = EditorGUI.TextField (labelHexRect, hexString);
+										string newHex = EditorGUI.TextField (labelHexRect, hexString);
 
-								if (!newHex.Equals (JSONPersistor.ColorToHex (col))) {
-										data.colors [i] = JSONPersistor.HexToColor (newHex);
+										if (!newHex.Equals (JSONPersistor.ColorToHex (col))) {
+												data.colors [i] = JSONPersistor.HexToColor (newHex);
+										}
 								}
 
 			
@@ -149,6 +159,8 @@ public class PaletteInspector : Editor
 
 		protected virtual PaletteData drawSizeButtons (PaletteData data)
 		{
+				GUILayout.Space (10);
+
 				EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Change the size of the Palette");
 				EditorGUILayout.EndHorizontal ();
@@ -165,13 +177,14 @@ public class PaletteInspector : Editor
 
 				EditorGUILayout.EndHorizontal ();
 
+				GUILayout.Space (10);
+
 				return data;
 		}
 
 		protected virtual void drawSaveButtons ()
 		{
-
-				GUILayoutUtility.GetRect (Screen.width, 10);
+				GUILayout.Space (10);
 
 				EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Storing the Palette");

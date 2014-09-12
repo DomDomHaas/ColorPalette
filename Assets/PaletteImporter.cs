@@ -102,9 +102,16 @@ namespace ColorPalette
 						this.myImporterData.colors = new Color[5];
 						this.myImporterData.percentages = new float[5];
 
+						PaletteData extracedData = null;
+
 						if (isColourLovers) {
 
-								extractFromColorlovers (doc);
+								extracedData = extractFromColorlovers (doc, this.myImporterData.loadPercent);
+
+								this.myImporterData.name = extracedData.name;
+								this.myImporterData.colors = extracedData.colors;
+								this.myImporterData.percentages = extracedData.percentages;
+								this.myImporterData.alphas = extracedData.alphas;
 
 								if (this.myImporterData.loadPercent) {
 				
@@ -117,7 +124,14 @@ namespace ColorPalette
 								}
 
 						} else if (isPLTTS) {
-								extractFromPLTTS (doc);
+
+								extracedData = extractFromPLTTS (doc, this.myImporterData.loadPercent);
+
+								this.myImporterData.name = extracedData.name;
+								this.myImporterData.colors = extracedData.colors;
+								this.myImporterData.percentages = extracedData.percentages;
+								this.myImporterData.alphas = extracedData.alphas;
+
 						}
 
 						yield return null;
@@ -153,45 +167,56 @@ namespace ColorPalette
 						myImporterData.paletteURL = URL;
 				}
 
-				private void extractFromColorlovers (Document doc)
+				/// <summary>
+				/// Extracts from colorlovers, the percentages only the pixel-width, so it as to be divied with the totalwidth
+				/// </summary>
+				/// <returns>The from colorlovers.</returns>
+				/// <param name="doc">Document.</param>
+				/// <param name="loadPercentages">If set to <c>true</c> load percentages.</param>
+				public static PaletteData extractFromColorlovers (Document doc, bool loadPercentages)
 				{
 						int colorCount = 0;
 						int percentCount = 0;
-						this.myImporterData.totalWidth = 0;
+						PaletteData palette = new PaletteData ();
 
-						IEnumerable<Tag> headerTags = doc.FindAll ("h1");
+/*
+ 						IEnumerable<Tag> headerTags = doc.FindAll ("h1");
 						foreach (Tag headerTag in headerTags) {
 //								if (!string.IsNullOrEmpty (headerTag.c)) {
 
 
-								//this.myImporterData.name = headerTag.ToString ();
+								//palette.name = headerTag.ToString ();
 								Debug.Log (headerTag.ToString ().HtmlDecode ());
 								//["class"] == "feature-detail-container") {
 
 //								}
 						}
+			 */
 
 
 						IEnumerable<Tag> links = doc.FindAll ("a");
+
 
 						foreach (Tag a in links) {
 								if (a ["class"] == "left pointer block") {
 
 										string style = a ["style"];
+										//Debug.Log ("style.Split (';') " + style.Split (';').Length);
+
 										foreach (string styleCss in style.Split (';')) {
-												if (myImporterData.loadPercent && styleCss.Contains ("width")) {
+												if (loadPercentages && styleCss.Contains ("width")) {
 
 														string width = styleCss.Split (':') [1];
 														width = width.Substring (0, width.IndexOf ("px"));
 														float widthF = float.Parse (width.Trim ());
-														this.myImporterData.totalWidth += widthF;
-														this.myImporterData.percentages [percentCount++] = widthF;
+														palette.totalWidth += widthF;
+														palette.percentages [percentCount++] = widthF;
 
 												} else if (styleCss.Contains ("background-color")) {
 
 														string bgColor = styleCss.Split (':') [1];
 														bgColor = bgColor.Trim ().Substring (1);
-														this.myImporterData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
+														palette.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
 												}
 										}
 
@@ -199,15 +224,17 @@ namespace ColorPalette
 								}
 						}
 
+//						Debug.Log (palette.percentages [0]);
 
+						return palette;
 				}
 	
 
-				private void extractFromPLTTS (Document doc)
+				public static PaletteData extractFromPLTTS (Document doc, bool loadPercent)
 				{
 						int colorCount = 0;
 						int percentCount = 0;
-						this.myImporterData.totalWidth = 0;
+						PaletteData palette = new PaletteData ();
 
 						Tag colorBlock = doc.Find (".palette-colors");
 						//Debug.Log (colorBlock);
@@ -222,19 +249,19 @@ namespace ColorPalette
 
 										string style = colorTag ["style"];
 										foreach (string styleCss in style.Split (';')) {
-												if (myImporterData.loadPercent && styleCss.Contains ("width")) {
+												if (loadPercent && styleCss.Contains ("width")) {
 						
 														string width = styleCss.Split (':') [1];
 														width = width.Substring (0, width.IndexOf ("%"));
 														float widthF = float.Parse (width.Trim ());
-														this.myImporterData.totalWidth += widthF / 100;
-														this.myImporterData.percentages [percentCount++] = widthF / 100;
+														palette.totalWidth += widthF / 100;
+														palette.percentages [percentCount++] = widthF / 100;
 						
 												} else if (styleCss.Contains ("background-color")) {
 						
 														string bgColor = styleCss.Split (':') [1];
 														bgColor = bgColor.Trim ().Substring (1);
-														this.myImporterData.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
+														palette.colors [colorCount++] = JSONPersistor.HexToColor (bgColor);
 												}
 										}
 				
@@ -242,10 +269,11 @@ namespace ColorPalette
 								}
 						}
 
-						if (!myImporterData.loadPercent) {
-								this.myImporterData.percentages = PaletteData.getDefaultPercentages ();
+						if (!loadPercent) {
+								palette.percentages = PaletteData.getDefaultPercentages ();
 						}
 
+						return palette;
 				}
 
 				public override JSONClass getDataClass ()
