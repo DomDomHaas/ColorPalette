@@ -7,6 +7,8 @@ using ColorPalette;
 [CustomEditor(typeof(Palette))]
 public class PaletteInspector : Editor
 { 
+		protected Texture2D plusTex;
+		protected Texture2D minusTex;
 		protected float height = 100;
 
 		protected bool showPalette = true;
@@ -26,18 +28,41 @@ public class PaletteInspector : Editor
 		protected float colorChangeRightMargin = 20;
 		protected float colorChangeMarginBetween = 25;
 
-	
-	
+		protected float buttonMarginBetween = 10;
+
 		private Palette myPalette;
 
 
 		[ExecuteInEditMode]
 		public void OnEnable ()
 		{
+				loadButtonTextures ();
+
 				myPalette = target as Palette;
 				myPalette.init ();
 		}
 
+		protected virtual void loadButtonTextures (string pathToTextures = null)
+		{
+				string folderPath = "";
+				if (string.IsNullOrEmpty (pathToTextures)) {
+						folderPath = Application.dataPath + "/ColorPalettes/Editor/";
+				} else {
+						folderPath = pathToTextures;
+				}
+				plusTex = JSONPersistor.getTextureFromWWW (folderPath + "plus_color.png");
+				plusTex.hideFlags = HideFlags.HideAndDontSave;
+				minusTex = JSONPersistor.getTextureFromWWW (folderPath + "minus_color.png");
+				minusTex.hideFlags = HideFlags.HideAndDontSave;
+		}
+
+		[ExecuteInEditMode]
+		public void OnDisable ()
+		{
+				DestroyImmediate (plusTex);
+				DestroyImmediate (minusTex);
+		}
+	
 		public override void OnInspectorGUI ()
 		{    
 				// uncomment for debugging
@@ -57,7 +82,7 @@ public class PaletteInspector : Editor
 				//Rect foldOutTextRect = new Rect (50, foldOutRect.y, Screen.width - 10, foldOutRect.height);
 
 				if (showPalette) {
-						myPalette.myData = drawColorPalette (myPalette.myData);
+						myPalette.myData = drawColorPalette (myPalette.myData, true);
 				}
 
 
@@ -99,10 +124,12 @@ public class PaletteInspector : Editor
 
 				GUILayout.Space (10);
 
-				Rect paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight);
+				Rect paletteRect;
 
 				if (showHexValues) {
-						paletteRect.height = paletteHeight + paletteTopMargin;
+						paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight + paletteTopMargin);
+				} else {
+						paletteRect = GUILayoutUtility.GetRect (Screen.width, paletteHeight);
 				}
 		
 
@@ -161,17 +188,15 @@ public class PaletteInspector : Editor
 		{
 				GUILayout.Space (10);
 
-				EditorGUILayout.BeginHorizontal ();
-				EditorGUILayout.LabelField ("Change the size of the Palette");
-				EditorGUILayout.EndHorizontal ();
+				Rect buttonRect = EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("Change the size of the Palette: ");
 
-				EditorGUILayout.BeginHorizontal ();
 
-				if (GUILayout.Button ("Add Color", GUILayout.Width (Screen.width / 2))) { 
+				if (GUI.Button (new Rect (Screen.width - 50 - 32 - buttonMarginBetween, buttonRect.y, 32, 32), new GUIContent (plusTex, "Add Color"), EditorStyles.miniButtonRight)) { 
 						data.setSize (data.colors.Length + 1);
 				} 
 
-				if (GUILayout.Button ("Remove last Color", GUILayout.Width (Screen.width / 2))) { 
+				if (GUI.Button (new Rect (Screen.width - 50, buttonRect.y, 32, 32), new GUIContent (minusTex, "Remove last Color"), EditorStyles.miniButton)) { 
 						data.setSize (data.colors.Length - 1);
 				} 
 

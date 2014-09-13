@@ -73,6 +73,65 @@ namespace ColorPalette
 
 				}
 
+				public bool setSize (int newSize, KeyValuePair<string, PaletteData> kvp = new KeyValuePair<string, PaletteData> ())
+				{
+						if (newSize != this.palettes.Count) {
+				
+								if (newSize > this.palettes.Count) {
+					
+										return CreatePalette (kvp);
+								} else {
+
+										IDictionary<string, PaletteData> newPalettes = new Dictionary<string, PaletteData> ();
+
+										int i = 0;
+										foreach (KeyValuePair<string, PaletteData> keyvalue in this.palettes) {
+												
+												if (i < this.palettes.Count - 1) {
+														// don't add the last palette!
+														newPalettes.Add (keyvalue);
+												}
+												i++;
+										}
+
+										this.palettes = newPalettes;
+										return true;
+								}
+						}
+			
+						return false;
+				}
+
+				/// <summary>
+				/// Creates the plaette.
+				/// </summary>
+				/// <returns><c>true</c>, if plaette was created, <c>false</c> otherwise.</returns>
+				/// <param name="kvp">Kvp.</param>
+				private bool CreatePalette (KeyValuePair<string, PaletteData> kvp = new KeyValuePair<string, PaletteData> ())
+				{
+						if (string.IsNullOrEmpty (kvp.Key)) {
+								try {
+										palettes.Add ("newPalette", new PaletteData ("newPalette"));
+								} catch (System.ArgumentException e) {
+										Debug.Log (e);
+										Debug.Log (" make sure you change the 'newPalette' name first before adding a new palette!");
+										return false;
+								}
+				
+								return true;
+				
+						} else {
+								if (palettes.ContainsKey (kvp.Key)) {
+										return false;
+								} else {
+										palettes.Add (kvp);
+										return true;
+								}
+						}
+				}
+
+
+
 		#endregion
 
 		}

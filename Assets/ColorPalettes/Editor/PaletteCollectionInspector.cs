@@ -16,10 +16,14 @@ public class PaletteCollectionInspector : PaletteInspector
 		private IDictionary<string, PaletteData> changeKeys = new Dictionary<string, PaletteData> ();
 		private PaletteCollection myCollection;
 
+		private Texture2D minusPalette;
+		private Texture2D plusPalette;
 
 		[ExecuteInEditMode]
 		new public void OnEnable ()
 		{
+				loadButtonTextures ();
+
 				myCollection = target as PaletteCollection;
 				myCollection.init ();
 
@@ -32,6 +36,34 @@ public class PaletteCollectionInspector : PaletteInspector
 						}
 				}
 				URL = myCollection.collectionData.paletteURL;
+		}
+
+		protected override void loadButtonTextures (string pathToTextures = null)
+		{
+
+				string folderPath = "";
+				if (string.IsNullOrEmpty (pathToTextures)) {
+						folderPath = Application.dataPath + "/ColorPalettes/Editor/";
+				} else {
+						folderPath = pathToTextures;
+				}
+
+				base.loadButtonTextures (folderPath);
+
+				plusPalette = JSONPersistor.getTextureFromWWW (folderPath + "plus_palette.png");
+				plusPalette.hideFlags = HideFlags.HideAndDontSave;
+				minusPalette = JSONPersistor.getTextureFromWWW (folderPath + "minus_palette.png");
+				minusPalette.hideFlags = HideFlags.HideAndDontSave;
+		}
+
+	
+		[ExecuteInEditMode]
+		public void OnDisable ()
+		{
+				DestroyImmediate (plusTex);
+				DestroyImmediate (minusTex);
+				DestroyImmediate (plusPalette);
+				DestroyImmediate (minusPalette);
 		}
 
 		public override void OnInspectorGUI ()
@@ -155,11 +187,20 @@ public class PaletteCollectionInspector : PaletteInspector
 		private void changeShowPalette (int newSize)
 		{
 				if (this.showPalettes != null) {
-						bool[] newBools = new bool[newSize];
+						if (newSize > this.showPalettes.Length) {
+								bool[] newBools = new bool[newSize];
 
-						this.showPalettes.CopyTo (newBools, 0);
-						this.showPalettes = newBools;
-						this.showPalettes [this.showPalettes.Length - 1] = true;
+								this.showPalettes.CopyTo (newBools, 0);
+								this.showPalettes = newBools;
+								this.showPalettes [this.showPalettes.Length - 1] = true;
+						} else {
+
+								bool[] newBools = new bool[newSize];
+								for (int i = 0; i < newSize; i++) {
+										newBools [i] = this.showPalettes [i];
+								}
+								this.showPalettes = newBools;
+						}
 				} else {
 						this.showPalettes = new bool[1]{true};
 				}
@@ -169,28 +210,21 @@ public class PaletteCollectionInspector : PaletteInspector
 		{		
 				GUILayout.Space (25);
 
-				EditorGUILayout.BeginHorizontal ();
+				Rect collectionRect = EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Collection functions");
 				EditorGUILayout.EndHorizontal ();
 		
-				EditorGUILayout.BeginHorizontal ();
 
-				if (GUILayout.Button (new GUIContent ("Add a new Palette", "Is added to the end"),
-		                      GUILayout.Width (Screen.width / 2))) { 
-						myCollection.CreatePalette ();
-/*						if (myCollection.CreatePalette ()) {
-								changeShowPalette (myCollection.collectionData.palettes.Count);
-						}
-*/
-				} 
-		
-				if (GUILayout.Button (new GUIContent ("Remove last Palette", "Might take a while!"),
-		                      GUILayout.Width (Screen.width / 2))) { 
-						//myCollection.RemovePalette();
-				} 
-		
-				EditorGUILayout.EndHorizontal ();
+				if (GUI.Button (new Rect (Screen.width - 50 - 40 - buttonMarginBetween, collectionRect.y, 40, 40), new GUIContent (plusPalette, "Add new Palette"), EditorStyles.miniButtonRight)) { 
+						myCollection.collectionData.setSize (myCollection.collectionData.palettes.Count + 1);
+				}
 
+				if (GUI.Button (new Rect (Screen.width - 50, collectionRect.y, 40, 40), new GUIContent (minusPalette, "Remove last Palette"), EditorStyles.miniButton)) { 
+						myCollection.collectionData.setSize (myCollection.collectionData.palettes.Count - 1);
+				}
+
+
+				GUILayout.Space (40);
 
 /*				EditorGUILayout.BeginHorizontal ();
 				EditorGUILayout.LabelField ("Storing the Collection");

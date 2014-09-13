@@ -220,5 +220,30 @@ public class JSONPersistor
 				return colors;
 		}
 
+		public static Texture2D getTextureFromWWW (string fullPath)
+		{
+				fullPath = "file:///" + fullPath;
+				WWW wwwLoader = new WWW (fullPath);
+				//Debug.Log ("loading texture " + fullPath + " via www, loaded: " + www);
+				return wwwLoader.texture;
+		}
+
+		public static Sprite getSpriteFromWWW (string fullPath, bool packTight = false)
+		{
+				Texture2D tex = getTextureFromWWW (fullPath);
+
+				Rect rect = new Rect (0, 0, tex.width, tex.height);
+				SpriteMeshType meshType = SpriteMeshType.FullRect;
+				if (packTight) {
+						meshType = SpriteMeshType.Tight;
+				}
+		
+				// use 100f to scale down
+				Sprite spr = Sprite.Create (tex, rect, new Vector2 (0.5f, 0.5f), 100f, 0, meshType);
+				spr.name = fullPath.Substring (fullPath.LastIndexOf ("/") + 1);
+				return spr;
+		}
+
+
 	#endregion
 }

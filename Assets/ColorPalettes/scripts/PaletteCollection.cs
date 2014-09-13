@@ -47,34 +47,6 @@ namespace ColorPalette
 	
 				}
 
-				/// <summary>
-				/// Creates the plaette.
-				/// </summary>
-				/// <returns><c>true</c>, if plaette was created, <c>false</c> otherwise.</returns>
-				/// <param name="kvp">Kvp.</param>
-				public bool CreatePalette (KeyValuePair<string, PaletteData> kvp = new KeyValuePair<string, PaletteData> ())
-				{
-						if (string.IsNullOrEmpty (kvp.Key)) {
-								try {
-										collectionData.palettes.Add ("newPalette", new PaletteData ("newPalette"));
-								} catch (System.ArgumentException e) {
-										Debug.Log (e);
-										return false;
-								}
-
-								return true;
-
-						} else {
-								if (collectionData.palettes.ContainsKey (kvp.Key)) {
-										return false;
-								} else {
-										collectionData.palettes.Add (kvp);
-										return true;
-								}
-						}
-				}
-
-
 
 				private void reset ()
 				{
@@ -137,7 +109,8 @@ namespace ColorPalette
 								return false;
 						}
 */
-						return CreatePalette (new KeyValuePair<string, PaletteData> (extracedData.name, extracedData));
+						return this.collectionData.setSize (this.collectionData.palettes.Count + 1,
+			                                   new KeyValuePair<string, PaletteData> (extracedData.name, extracedData));
 				}
 
 
