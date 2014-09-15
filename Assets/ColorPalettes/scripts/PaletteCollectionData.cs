@@ -6,11 +6,11 @@ using SimpleJSON;
 namespace ColorPalette
 {
 		[Serializable]
-		public class PaletteCollectionData : UnityEngine.Object
+		public class PaletteCollectionData : System.Object
 		{
 				public PaletteCollectionData ()
 				{
-						this.name = this.GetInstanceID ().ToString ();
+						this.name = "PaletteCollectionData " + this.GetHashCode ();
 						this.paletteURL = " ";
 						this.loadPercent = false;
 						this.palettes = new Dictionary<string, PaletteData> ();
@@ -130,7 +130,15 @@ namespace ColorPalette
 						}
 				}
 
+				public override string ToString ()
+				{
+						string str = "[" + this.GetType () + "] ";
+						foreach (KeyValuePair<string, PaletteData> kvp in this.palettes) {
+								str += kvp.Value.ToString () + " ";
+						}
 
+						return str;
+				}
 
 		#endregion
 

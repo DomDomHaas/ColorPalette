@@ -11,7 +11,11 @@ namespace ColorPalette
 		public class Palette : JSONPersistent
 		{
 
-				public PaletteData myData;
+				/// <summary>
+				/// The PaletteData. If you access it directly make sure it's loaded. Or use GetPaletteData()
+				/// </summary>
+				public PaletteData myData = null;
+
 
 				// Use this for initialization
 				new void Awake ()
@@ -36,6 +40,17 @@ namespace ColorPalette
 				{
 	
 				}
+
+				public PaletteData GetPaletteData ()
+				{
+						if (myData == null) {
+								// initialize incase it's not done yet... should only be if it's used via editor script
+								this.init ();
+						}
+			
+						return myData;
+				}
+
 
 				public override SimpleJSON.JSONClass getDataClass ()
 				{

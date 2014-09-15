@@ -7,7 +7,7 @@ namespace ColorPalette
 		[Serializable]
 		public class PaletteImporterData : PaletteData
 		{
-				public PaletteImporterData () : base()
+				public PaletteImporterData (string name = null) : base(name)
 				{
 						this.paletteURL = "";
 						this.loadPercent = false;
@@ -41,6 +41,17 @@ namespace ColorPalette
 						base.setPalette (jClass);
 				}
 
+				public override string ToString ()
+				{
+						JSONClass jClass = getJsonPalette ();
+
+						string baseClass = base.ToString ();
+
+						baseClass += " paletteURL: " + jClass ["paletteURL"].ToString ()
+								+ " loadPercent: " + jClass ["loadPercent"].ToString ();
+
+						return baseClass;
+				}
 
 		}
 }

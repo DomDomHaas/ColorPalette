@@ -12,11 +12,10 @@ namespace ColorPalette
 
 		public class PaletteCollection : JSONPersistent
 		{
-
-				public PaletteCollectionData collectionData;
-
-				public bool importIsRunning = false;
-				public float importedBytes = 0;
+				/// <summary>
+				/// The collection data. If you access it directly make sure it's loaded. Or use GetCollectionData()
+				/// </summary>
+				public PaletteCollectionData collectionData = null;
 
 				private bool isColourLovers = false;
 				private bool isPLTTS = false;
@@ -30,7 +29,7 @@ namespace ColorPalette
 
 				public void init ()
 				{
-						collectionData.palettes = new Dictionary<string, PaletteData> ();
+						collectionData = new PaletteCollectionData ();
 
 						fileName = getFileName ();
 						reset ();
@@ -38,6 +37,8 @@ namespace ColorPalette
 						if (JSONPersistor.Instance.fileExists (fileName)) {
 								load ();
 						}
+
+						//Debug.Log ("joy4? " + collectionData.palettes.ContainsKey ("joy4"));
 				}
 
 	
@@ -53,8 +54,6 @@ namespace ColorPalette
 						this.isColourLovers = false;
 						this.isLocalFile = false;
 						this.isPLTTS = false;
-						this.importIsRunning = false;
-						this.importedBytes = 0;
 				}
 		
 				public bool ImportPaletteCollection (string newURL)
@@ -72,7 +71,6 @@ namespace ColorPalette
 								}
 						}
 
-						this.importedBytes = html.bytesDownloaded;
 						Debug.Log ("download finished, loaded " + html.bytesDownloaded + " bytes");
 
 						collectionData.paletteURL = newURL;
@@ -141,6 +139,23 @@ namespace ColorPalette
 						}
 			
 						collectionData.paletteURL = URL;
+				}
+
+				public PaletteCollectionData GetCollectionData ()
+				{
+/*						if (collectionData == null) {
+								Debug.Log ("null?? GetCollectionData " + collectionData);
+						} else {
+								Debug.Log ("GetCollectionData name " + collectionData);
+						}
+*/
+						if (collectionData == null) {
+								// initialize incase it's not done yet... should only be if it's used via editor script
+								Debug.Log ("GetCollectionData do init!");
+								this.init ();
+						}
+
+						return collectionData;
 				}
 
 				/*

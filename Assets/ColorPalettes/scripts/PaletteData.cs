@@ -6,13 +6,13 @@ namespace ColorPalette
 {
 
 		[Serializable]
-		public class PaletteData : UnityEngine.Object
+		public class PaletteData : System.Object
 		{
 
 				public PaletteData (string name = null)
 				{
 						if (string.IsNullOrEmpty (name)) {
-								this.name = this.GetInstanceID ().ToString ();
+								this.name = "PaletteData " + this.GetHashCode ();
 						} else {
 								this.name = name;
 						}
@@ -222,6 +222,14 @@ namespace ColorPalette
 				}
 
 		#endregion
+
+				public override string ToString ()
+				{
+						JSONClass jClass = getJsonPalette ();
+						return "[" + this.GetType () + "] name: " + this.name + " colors: " + jClass ["colors"].ToString ()
+								+ " alphas: " + jClass ["alphas"].ToString ()
+								+ " percentages: " + jClass ["percentages"].ToString ();
+				}
 
 		}
 }
