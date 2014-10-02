@@ -18,6 +18,8 @@ public class PaletteImporterInspector : PaletteInspector
 		[ExecuteInEditMode]
 		new public void OnEnable ()
 		{
+				base.OnEnable ();
+
 				myPaletteImporter = target as PaletteImporter;
 				myPaletteImporter.init ();
 				URL = myPaletteImporter.myImporterData.paletteURL;
@@ -109,7 +111,7 @@ public class PaletteImporterInspector : PaletteInspector
 				GUILayoutUtility.GetRect (Screen.width, 10);
 		}
 
-		protected virtual void drawSaveButtons ()
+		new protected virtual void drawSaveButtons ()
 		{
 		
 				GUILayout.Space (10);

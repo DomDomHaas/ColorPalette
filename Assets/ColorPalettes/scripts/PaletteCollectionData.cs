@@ -5,7 +5,6 @@ using SimpleJSON;
 
 namespace ColorPalette
 {
-		[Serializable]
 		public class PaletteCollectionData : System.Object
 		{
 				public PaletteCollectionData ()
@@ -16,21 +15,13 @@ namespace ColorPalette
 						this.palettes = new Dictionary<string, PaletteData> ();
 				}
 
-				[SerializeField]
-				new public string
-						name;
+				public string name;
 
-				[SerializeField]
-				public string
-						paletteURL;
+				public string paletteURL;
 		
-				[SerializeField]
-				public bool
-						loadPercent;
+				public bool loadPercent;
 
-				[SerializeField]
-				public IDictionary<string, PaletteData>
-						palettes;
+				public IDictionary<string, PaletteData> palettes;
 
 		#region publicMethods
 
@@ -113,8 +104,8 @@ namespace ColorPalette
 								try {
 										palettes.Add ("newPalette", new PaletteData ("newPalette"));
 								} catch (System.ArgumentException e) {
-										Debug.Log (e);
-										Debug.Log (" make sure you change the 'newPalette' name first before adding a new palette!");
+										Debug.LogWarning (e);
+										Debug.LogWarning (" make sure you change the 'newPalette' name first before adding a new palette!");
 										return false;
 								}
 				
@@ -122,6 +113,7 @@ namespace ColorPalette
 				
 						} else {
 								if (palettes.ContainsKey (kvp.Key)) {
+										Debug.LogWarning ("Palette '" + kvp.Key + "' already exists! Change that name before adding a new palette!");
 										return false;
 								} else {
 										palettes.Add (kvp);

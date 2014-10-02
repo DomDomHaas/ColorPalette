@@ -17,7 +17,7 @@ namespace ColorPalette
 				private bool isPLTTS = false;
 				private bool isLocalFile = false;
 
-				public PaletteImporterData myImporterData;
+				public PaletteImporterData myImporterData = null;
 
 				//new public PaletteData myData;
 
@@ -28,15 +28,17 @@ namespace ColorPalette
 						init ();
 				}
 
-				public void init ()
+				new public void init ()
 				{
-						isColourLovers = false;
-						isPLTTS = false;
-						isLocalFile = false;
+						if (myImporterData == null) {
+								isColourLovers = false;
+								isPLTTS = false;
+								isLocalFile = false;
 
-						myImporterData = new PaletteImporterData ();
+								myImporterData = new PaletteImporterData ();
 
-						base.init ();
+								base.init ();
+						}
 				}
 	
 				// Update is called once per frame
@@ -95,29 +97,40 @@ namespace ColorPalette
 
 						Debug.Log ("download finished, loaded " + html.bytesDownloaded + " bytes");
 						this.myImporterData.paletteURL = newURL;
+						string[] splitted = newURL.Split ('/');
+						string paletteName = splitted [splitted.Length - 1];
+
 
 						HtmlParser parser = new HtmlParser ();
 						Document doc = parser.Parse (html.text);
 
-						this.myImporterData.colors = new Color[5];
+/*						this.myImporterData.colors = new Color[5];
 						this.myImporterData.percentages = new float[5];
-
+*/
 						PaletteData extracedData = null;
 
 						if (isColourLovers) {
 
 								extracedData = extractFromColorlovers (doc, this.myImporterData.loadPercent);
 
-								this.myImporterData.name = extracedData.name;
+								// don't copy directly because of PaletteData vs PaletteImporterData
+								this.myImporterData.totalWidth = extracedData.totalWidth;
+								this.myImporterData.name = paletteName;
 								this.myImporterData.colors = extracedData.colors;
-								this.myImporterData.percentages = extracedData.percentages;
 								this.myImporterData.alphas = extracedData.alphas;
 
+
 								if (this.myImporterData.loadPercent) {
+
+										this.myImporterData.percentages = extracedData.percentages;
+
 				
 										for (int i = 0; i < this.myImporterData.percentages.Length; i++) {
 												// totalWidth = 100% this.myData.percentages [i] = x%
+
 												this.myImporterData.percentages [i] = this.myImporterData.percentages [i] / this.myImporterData.totalWidth;
+												//Debug.Log ("totalWidth " + this.myImporterData.totalWidth + " % " + this.myImporterData.percentages [i]);
+
 										}
 								} else {
 										this.myImporterData.percentages = PaletteData.getDefaultPercentages ();
@@ -127,7 +140,7 @@ namespace ColorPalette
 
 								extracedData = extractFromPLTTS (doc, this.myImporterData.loadPercent);
 
-								this.myImporterData.name = extracedData.name;
+								this.myImporterData.name = paletteName;
 								this.myImporterData.colors = extracedData.colors;
 								this.myImporterData.percentages = extracedData.percentages;
 								this.myImporterData.alphas = extracedData.alphas;
@@ -149,7 +162,7 @@ namespace ColorPalette
 						} else if (URL.Contains ("file:")) {
 								isLocalFile = true;
 						} else {
-								throw new UnityException ("Unkown URL, so far only colourlovers.com and pltts.me is supported! " + URL);
+								throw new UnityException ("Unkown URL '" + URL + "' , so far only colourlovers.com and pltts.me is supported! ");
 						}
 
 						if (isLocalFile) {
@@ -209,6 +222,9 @@ namespace ColorPalette
 														string width = styleCss.Split (':') [1];
 														width = width.Substring (0, width.IndexOf ("px"));
 														float widthF = float.Parse (width.Trim ());
+
+														//Debug.Log ("found % " + widthF + " from " + styleCss);
+
 														palette.totalWidth += widthF;
 														palette.percentages [percentCount++] = widthF;
 

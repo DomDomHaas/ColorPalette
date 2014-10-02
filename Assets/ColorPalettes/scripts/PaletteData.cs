@@ -5,44 +5,34 @@ using SimpleJSON;
 namespace ColorPalette
 {
 
-		[Serializable]
 		public class PaletteData : System.Object
 		{
+				public static readonly string namePrefix = "PaletteData";
 
 				public PaletteData (string name = null)
 				{
 						if (string.IsNullOrEmpty (name)) {
-								this.name = "PaletteData " + this.GetHashCode ();
-						} else {
 								this.name = name;
+						} else {
+								this.name = namePrefix + "_" + name;								
 						}
-						this.colors = getDefaultColors ();
 
+						this.colors = getDefaultColors ();
 						this.alphas = getDefaultAlphas ();
 						this.percentages = getDefaultPercentages ();
 
 						this.totalWidth = 0;
 				}
 
-				[SerializeField]
-				new public string
-						name;
+				public string name;
 
-				[SerializeField]
-				public Color[]
-						colors;
+				public Color[] colors;
 
-				[SerializeField]
-				public float[]
-						alphas;
+				public float[] alphas;
 
-				[SerializeField]
-				public float[]
-						percentages;
-				
-				[SerializeField]
-				public float
-						totalWidth;
+				public float[] percentages;
+
+				public float totalWidth;
 
 
 		#region publicMethods

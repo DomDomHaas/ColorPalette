@@ -23,15 +23,11 @@ namespace ColorPalette
 						init ();
 				}
 
-				public void init ()
+				new public void init ()
 				{
-						myData = new PaletteData ();
-
-						fileName = getFileName ();
-
-
-						if (JSONPersistor.Instance.fileExists (fileName)) {
-								load ();
+						if (myData == null) {
+								myData = new PaletteData ();
+								base.init ();
 						}
 				}
 	
@@ -82,6 +78,11 @@ namespace ColorPalette
 				public override void setClassData (SimpleJSON.JSONClass jClass)
 				{
 						this.myData.setPalette (jClass);
+
+/*						for (int i = 0; i < this.myData.percentages.Length; i++) {
+								Debug.Log (i + " % is " + this.myData.percentages [i]);
+						}
+*/
 /*						int size = jClass ["colors"].Count;
 
 						string[] hexArray = new string[size];
@@ -120,20 +121,16 @@ namespace ColorPalette
 						myData.totalWidth = jClass ["totalWidth"].AsFloat;*/
 				}
 
-				public override string getFileName ()
-				{
-						return this.gameObject.name + "_myData";
-				}
-						
+
 				public override void save ()
 				{
-						fileName = getFileName ();	
+						//fileName = getFileName ();	
 						base.save ();
 				}
 
 				public override void load ()
 				{
-						fileName = getFileName ();	
+						//fileName = getFileName ();	
 						base.load ();
 				}
 			

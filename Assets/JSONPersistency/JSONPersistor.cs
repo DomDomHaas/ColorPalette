@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.IO;
 using System.Text; 
 using SimpleJSON;
+using System.Reflection;
+using UnityEditor;
 
 public class JSONPersistor
 {
@@ -14,18 +18,36 @@ public class JSONPersistor
 		public static readonly string nextEntry = ",";
 		public static readonly string separator = ":";
 
-		private static readonly JSONPersistor instance = new JSONPersistor ();
-	
+		private static JSONPersistor instance = null;
+
+/*		private int instanceCount = 0;
+
+		private IDictionary<int, string> fileInstances = new Dictionary<int, string> ();
+		private IDictionary<int, int> gameObjectInstances = new Dictionary<int, int> ();
+*/
 		private JSONPersistor ()
 		{
+				//IList<JSONPersistent> persistents = JSONPersistent.GetInstances ();
+				//loadUpExistingInstances (persistents);
 		}
 	
 		public static JSONPersistor Instance {
 				get {
+						if (instance == null) {
+								instance = new JSONPersistor ();
+						}
 						return instance; 
 				}
 		}
 
+/*		private void loadUpExistingInstances (IList<JSONPersistent> persistents)
+		{
+
+				foreach (JSONPersistent persist in persistents) {
+						registerNewInstance (persist);
+				}
+		}
+*/
 		public delegate void EventHandler (object listener,EventArgs e);
 
 		public event EventHandler gameSaved;
@@ -243,7 +265,115 @@ public class JSONPersistor
 				spr.name = fullPath.Substring (fullPath.LastIndexOf ("/") + 1);
 				return spr;
 		}
+	
+	#endregion
 
+	#region instance_methods
+
+		public static int GetLocalIdentfier (GameObject go)
+		{
+				PropertyInfo inspectorModeInfo = typeof(SerializedObject).GetProperty ("inspectorMode", BindingFlags.NonPublic 
+						| BindingFlags.Instance);
+		
+				SerializedObject serializedObject = new SerializedObject (go);
+				inspectorModeInfo.SetValue (serializedObject, InspectorMode.Debug, null);
+		
+				SerializedProperty localIdProp = serializedObject.FindProperty ("m_LocalIdentfierInFile");
+
+				//Debug.Log ("found property: " + localIdProp.intValue);
+
+				return localIdProp.intValue;
+		}
+
+		/*
+		private void registerNewInstance (JSONPersistent persitent)
+		{
+				if (persitent.id == -1) {
+
+						int instanceId = 0;
+
+						if (this.gameObjectInstances.ContainsKey (persitent.gameObject.GetInstanceID ())) {
+								instanceId = this.gameObjectInstances [persitent.gameObject.GetInstanceID ()];
+						} else {
+								instanceCount++;
+								this.fileInstances.Add (instanceCount, persitent.gameObject.name + "_" + instanceCount);
+								this.gameObjectInstances.Add (persitent.gameObject.GetInstanceID (), instanceCount);
+								instanceId = instanceCount;
+						}
+
+						persitent.id = instanceId;
+				}
+		}
+
+		public string getInstanceName (int id)
+		{
+				if (this.gameObjectInstances.ContainsKey (id)) {
+						id = this.gameObjectInstances [id];
+				}
+
+				if (this.fileInstances.ContainsKey (id)) {
+						return this.fileInstances [id];
+				}
+
+				return "";
+		}
+
+		public int getInstanceID (string instanceName)
+		{
+				int[] keys = this.fileInstances.Keys.ToArray ();
+
+				for (int i = 0; i < keys.Length; i++) {
+						if (this.fileInstances [i].Equals (instanceName)) {
+								return keys [i];
+						}
+				}
+
+				return -1;
+		}
+
+		public void killInstanceID (int id)
+		{
+
+				if (this.gameObjectInstances.ContainsKey (id)) {
+						int goInstanceId = this.gameObjectInstances [id];
+						this.gameObjectInstances.Remove (id);
+						id = goInstanceId;
+				}
+
+				if (this.fileInstances.ContainsKey (id)) {
+						this.fileInstances.Remove (id);
+				}
+		}
+
+*/
+
+
+/*		public static Guid GenerateSeededGuid (int seed)
+		{
+				instanceCount++;
+*/
+/*				System.Random rand = new System.Random (seed);
+				byte[] guid = new byte[16];
+
+				rand.NextBytes (guid);
+				byte[] guid = new byte[16];
+
+				for (int i = 0; i < guid.Length; i++) {
+						guid [i] = UnityEngine.Random.value
+				}
+				Debug.Log ("guid bytes " + guid);*/
+
+/*				Debug.Log ("length: " + BitConverter.GetBytes (instanceCount).Length);
+
+				byte[] guid = new byte[16];
+
+				guid.SetValue (instanceCount, 0);
+				guid.SetValue (instanceCount, 8);
+
+				return new Guid (guid);
+				//return new Guid (seed, 0, 0, new byte[8]);
+		}*/
 
 	#endregion
+
 }

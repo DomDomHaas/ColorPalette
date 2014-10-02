@@ -13,7 +13,7 @@ public class PaletteCollectionInspector : PaletteInspector
 		private bool showImporter = false;
 		private bool[] showPalettes;
 
-		private IDictionary<string, PaletteData> changeKeys = new Dictionary<string, PaletteData> ();
+		//private IDictionary<string, PaletteData> changeKeys = new Dictionary<string, PaletteData> ();
 		private PaletteCollection myCollection;
 
 		private Texture2D minusPalette;
@@ -58,7 +58,7 @@ public class PaletteCollectionInspector : PaletteInspector
 
 	
 		[ExecuteInEditMode]
-		public void OnDisable ()
+		new public void OnDisable ()
 		{
 				DestroyImmediate (plusTex);
 				DestroyImmediate (minusTex);
@@ -141,6 +141,7 @@ public class PaletteCollectionInspector : PaletteInspector
 		protected void drawAllPalettes ()
 		{
 				GUILayout.Space (15);
+				IDictionary<string, PaletteData> changeKeys = new Dictionary<string, PaletteData> ();
 
 				int i = 0;
 				if (this.showPalettes != null) {
@@ -156,6 +157,7 @@ public class PaletteCollectionInspector : PaletteInspector
 										//				myCollection.collectionData.palettes [kvp.Key] = 
 										PaletteData changeData = base.drawColorPalette (kvp.Value);
 										if (changeData.name != kvp.Key) {
+												//Debug.Log ("name change: " + changeData.name);
 												changeKeys.Add (kvp.Key, changeData);
 										}
 										//myCollection.collectionData.palettes [kvp.Key] =
@@ -167,13 +169,14 @@ public class PaletteCollectionInspector : PaletteInspector
 								i++;
 						}
 
-
 						if (changeKeys.Count > 0) {
 								foreach (KeyValuePair<string, PaletteData> kvp in changeKeys) {
-										myCollection.collectionData.palettes.Remove (kvp.Key);
-										myCollection.collectionData.palettes.Add (kvp.Value.name, kvp.Value);
+										if (myCollection.collectionData.palettes.ContainsKey (kvp.Key)) {
+												//Debug.Log ("remove " + kvp.Key + " add " + kvp.Value.name);
+												myCollection.collectionData.palettes.Remove (kvp.Key);
+												myCollection.collectionData.palettes.Add (kvp.Value.name, kvp.Value);
+										}
 								}
-								changeKeys = new Dictionary<string, PaletteData> ();
 						}
 
 /*				} else {

@@ -29,13 +29,12 @@ namespace ColorPalette
 
 				public void init ()
 				{
-						collectionData = new PaletteCollectionData ();
+						if (collectionData == null) {
 
-						fileName = getFileName ();
-						reset ();
+								collectionData = new PaletteCollectionData ();
+								reset ();
 
-						if (JSONPersistor.Instance.fileExists (fileName)) {
-								load ();
+								base.init ();
 						}
 
 						//Debug.Log ("joy4? " + collectionData.palettes.ContainsKey ("joy4"));
@@ -277,11 +276,11 @@ namespace ColorPalette
 				}
 */
 
-				public override string getFileName ()
+/*				public override string getFileName ()
 				{
-						return this.gameObject.name + "_palettes";
+						return "palettes_" + base.getFileName ();
 				}
-
+*/
 				public override JSONClass getDataClass ()
 				{
 						return this.collectionData.getJsonPalette ();
@@ -294,13 +293,13 @@ namespace ColorPalette
 
 				public override void save ()
 				{
-						fileName = getFileName ();	
+						//fileName = getFileName ();	
 						base.save ();
 				}
 		
 				public override void load ()
 				{
-						fileName = getFileName ();	
+						//fileName = getFileName ();	
 						base.load ();
 				}
 
