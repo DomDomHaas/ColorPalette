@@ -27,11 +27,11 @@ namespace ColorPalette
 						init ();
 				}
 
-				public void init ()
+				new public void init ()
 				{
 						if (collectionData == null) {
 
-								collectionData = new PaletteCollectionData ();
+								collectionData = new PaletteCollectionData (this.id);
 								reset ();
 
 								base.init ();
@@ -291,17 +291,6 @@ namespace ColorPalette
 						collectionData.setPalette (jClass);
 				}
 
-				public override void save ()
-				{
-						//fileName = getFileName ();	
-						base.save ();
-				}
-		
-				public override void load ()
-				{
-						//fileName = getFileName ();	
-						base.load ();
-				}
 
 		}
 
