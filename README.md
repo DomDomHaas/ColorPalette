@@ -12,7 +12,7 @@ If you want to use only the ColorPaletts make sure to use following scripts from
 - PaletteData.cs
 - Palette.cs
 - at least the PaletteInspector.cs from the Editor folder (it has to be put into a "Editor" folder)
-- All files of the folder **JSONPersistent** (it's actually another Tool for saving things to a txt-file)
+- All files of the folder **JSONPersistency** (it's actually another Tool for saving things to a txt-file)
 
 Then add the Palette.cs on a gameobject and start creating your palette.
 Make sure to click on the **Save-Button** once you're finished!
@@ -48,9 +48,8 @@ The "load from file" will be called in the Awake of the ColorPalette script. If 
 
 
 
-**KNOW ISSUSE**
+**KNOW ISSUES**
 ---
-- Plaette scripts on multiple GameObjects with the same name will cause errors when trying to save the file or will overwrite it.
-- So far I haven't had the chance to test it on mobile devices (andoird / iOS builds) and I'm pretty sure it won't work on the webplayer since where would the file be stored!
+- So far I haven't had the chance to test it on mobile devices (andoird / iOS builds) and I'm pretty sure it won't work on the webplayer since the file can't be stored!
 - I couldn't make a drag'n'drop from the colors to other objects in the scene.
 
